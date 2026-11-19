@@ -1,0 +1,3744 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STEMLab VN — Phòng Thí Nghiệm Khoa Học Ảo Tương Tác</title>
+
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#1D4ED8',
+              blueHover: '#1E40AF',
+              teal: '#0D9488',
+              tealLight: '#14B8A6',
+              amber: '#F59E0B',
+              amberHover: '#D97706',
+              dark: '#0F172A',
+              cardBg: '#FFFFFF',
+              surface: '#F8FAFC'
+            }
+          },
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          boxShadow: {
+            'soft': '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
+            'card-hover': '0 20px 30px -10px rgba(29, 78, 216, 0.14), 0 10px 15px -5px rgba(13, 148, 136, 0.10)',
+            'glow-amber': '0 0 25px rgba(245, 158, 11, 0.45)',
+            'glow-blue': '0 0 25px rgba(29, 78, 216, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Custom animations, floating science icons, sliders, and interactive effects */
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .animate-spin-slow {
+      animation: spinSlow 16s linear infinite;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% {
+        transform: translate3d(0, 0px, 0) rotate(var(--rot-start, 0deg));
+      }
+      50% {
+        transform: translate3d(var(--drift-x, 8px), var(--drift-y, -18px), 0) rotate(var(--rot-end, 12deg));
+      }
+    }
+
+    @keyframes floatReverse {
+      0%, 100% {
+        transform: translate3d(0, 0px, 0) rotate(var(--rot-start, 0deg));
+      }
+      50% {
+        transform: translate3d(calc(var(--drift-x, 8px) * -1), calc(var(--drift-y, -16px) * -0.8), 0) rotate(calc(var(--rot-end, -10deg) * -1));
+      }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        opacity: 0.78;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.06);
+      }
+    }
+
+    @keyframes auroraShift {
+      0%, 100% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    .aurora-bg {
+      background: linear-gradient(125deg, rgba(219, 234, 254, 0.65), rgba(240, 253, 250, 0.75), rgba(254, 243, 199, 0.45), rgba(224, 231, 255, 0.65));
+      background-size: 300% 300%;
+      animation: auroraShift 14s ease infinite;
+    }
+
+    .floating-science-icon {
+      position: absolute;
+      pointer-events: auto;
+      user-select: none;
+      animation: floatSlow var(--dur, 7s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease, filter 0.3s ease;
+      will-change: transform;
+    }
+
+    .floating-science-icon.alt-float {
+      animation-name: floatReverse;
+    }
+
+    .floating-science-icon:hover {
+      opacity: 0.95 !important;
+      filter: drop-shadow(0 10px 18px rgba(29, 78, 216, 0.25)) !important;
+      transform: scale(1.22) rotate(8deg) !important;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Custom Range Sliders */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: #e2e8f0;
+      border-radius: 9999px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      transform: scale(0.95);
+    }
+
+    #voltageSlider::-webkit-slider-thumb {
+      background: #1D4ED8;
+      border: 2px solid #ffffff;
+    }
+
+    #resistanceSlider::-webkit-slider-thumb {
+      background: #e11d48;
+      border: 2px solid #ffffff;
+    }
+
+    /* Filter Subject & Grade Buttons Active State */
+    .filter-subject-btn {
+      background-color: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .filter-subject-btn:hover {
+      background-color: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .filter-subject-btn.active {
+      background-color: #1D4ED8;
+      color: #ffffff;
+      border-color: #1D4ED8;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+    }
+
+    .filter-subject-btn.active i {
+      color: #ffffff !important;
+    }
+
+    .filter-grade-btn {
+      background-color: #f8fafc;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+
+    .filter-grade-btn:hover {
+      background-color: #f1f5f9;
+      color: #334155;
+    }
+
+    .filter-grade-btn.active {
+      background-color: #0D9488;
+      color: #ffffff;
+      border-color: #0D9488;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+    }
+
+    /* Card hover lift & shine */
+    .sim-card {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .sim-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .bulb-glow {
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 font-sans antialiased selection:bg-brand-blue selection:text-white flex flex-col min-h-screen relative overflow-x-hidden">
+
+  <!-- ==================== 1. THANH ĐIỀU HƯỚNG (NAVBAR) ==================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20 gap-2">
+
+        <!-- Logo Khoa Học -->
+        <a href="#" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-brand-blue rounded-xl p-1 shrink-0">
+          <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-brand-blue via-blue-600 to-brand-teal flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+            <i class="fa-solid fa-atom text-xl sm:text-2xl animate-spin-slow"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-xl sm:text-2xl font-extrabold tracking-tight text-brand-blue">STEM<span class="text-brand-teal">Lab</span></span>
+              <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-md border border-amber-300">VN</span>
+            </div>
+            <p class="text-[10px] sm:text-[11px] font-medium text-slate-500 tracking-wide uppercase" data-i18n="nav.tagline">Thí nghiệm Khoa học Ảo</p>
+          </div>
+        </a>
+
+        <!-- Menu Desktop -->
+        <nav class="hidden xl:flex items-center gap-1">
+          <a href="#simulations" class="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-brand-blue rounded-lg hover:bg-slate-100/80 transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-flask-vial text-brand-teal text-sm"></i>
+            <span data-i18n="nav.simulations">Mô phỏng</span>
+          </a>
+          <a href="#subjects" class="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-brand-blue rounded-lg hover:bg-slate-100/80 transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-shapes text-brand-blue text-sm"></i>
+            <span data-i18n="nav.subjects">Môn học</span>
+          </a>
+          <a href="#interactive-demo" class="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-brand-blue rounded-lg hover:bg-slate-100/80 transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-bolt text-brand-amber text-sm"></i>
+            <span data-i18n="nav.liveDemo">Phòng thí nghiệm mẫu</span>
+          </a>
+          <button onclick="openTeacherModal()" class="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-brand-blue rounded-lg hover:bg-slate-100/80 transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-chalkboard-user text-purple-600 text-sm"></i>
+            <span data-i18n="nav.teachers">Tài nguyên GV</span>
+            <span class="bg-blue-100 text-brand-blue text-[10px] font-bold px-1.5 py-0.5 rounded-full">Mới</span>
+          </button>
+          <a href="#about" class="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-brand-blue rounded-lg hover:bg-slate-100/80 transition-colors">
+            <span data-i18n="nav.about">Giới thiệu</span>
+          </a>
+        </nav>
+
+        <!-- Search, Language, & Auth Controls -->
+        <div class="flex items-center gap-2 sm:gap-2.5">
+          <!-- Search Box -->
+          <div class="relative hidden md:block w-44 lg:w-52">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input
+              type="text"
+              id="globalSearchInput"
+              placeholder="Tìm thí nghiệm..."
+              data-i18n-placeholder="search.placeholder"
+              class="w-full pl-8 pr-7 py-2 text-xs sm:text-sm bg-slate-100 hover:bg-slate-200/70 focus:bg-white border border-transparent focus:border-brand-blue rounded-xl outline-none transition-all placeholder:text-slate-400 font-medium"
+            />
+            <button id="clearSearchBtn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5" aria-label="Xóa tìm kiếm">
+              <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+          </div>
+
+          <!-- Nút chuyển ngôn ngữ -->
+          <button
+            id="langToggleBtn"
+            onclick="toggleLanguage()"
+            class="flex items-center gap-1.5 px-2.5 py-2 text-xs font-bold rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition-all shadow-sm active:scale-95"
+            title="Chuyển đổi ngôn ngữ / Switch language"
+          >
+            <span id="langFlag">🇻🇳</span>
+            <span id="langText">VI</span>
+          </button>
+
+          <!-- Khu vực Đăng nhập / Đăng ký hoặc Hồ sơ người dùng -->
+          <div id="authGuestControls" class="hidden sm:flex items-center gap-1.5">
+            <button
+              onclick="openAuthModal('login')"
+              class="px-3 py-2 text-xs font-bold rounded-xl border border-brand-blue/30 bg-blue-50/70 hover:bg-blue-100 text-brand-blue transition-all flex items-center gap-1.5"
+            >
+              <i class="fa-solid fa-right-to-bracket"></i>
+              <span data-i18n="auth.login">Đăng nhập</span>
+            </button>
+            <button
+              onclick="openAuthModal('register')"
+              class="px-3 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-brand-blue to-brand-teal hover:opacity-95 text-white shadow-sm shadow-blue-600/20 transition-all flex items-center gap-1.5"
+            >
+              <i class="fa-solid fa-user-plus"></i>
+              <span data-i18n="auth.register">Đăng ký</span>
+            </button>
+          </div>
+
+          <!-- Trạng thái đã đăng nhập -->
+          <div id="authUserBadge" class="hidden items-center gap-2 bg-slate-100 border border-slate-200 pl-2 pr-2.5 py-1 rounded-xl">
+            <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-brand-teal to-brand-blue text-white flex items-center justify-center text-xs font-extrabold" id="userAvatarInitials">
+              SV
+            </div>
+            <div class="hidden lg:block leading-tight">
+              <p id="userDisplayName" class="text-xs font-extrabold text-slate-800 max-w-[110px] truncate">Học sinh</p>
+              <p id="userDisplayRole" class="text-[10px] font-semibold text-brand-teal">Học sinh STEM</p>
+            </div>
+            <button
+              onclick="logoutUser()"
+              title="Đăng xuất"
+              class="ml-1 p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors text-xs"
+            >
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button id="mobileMenuBtn" class="xl:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none" aria-label="Mở menu">
+            <i class="fa-solid fa-bars text-xl"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile / Tablet Dropdown Menu -->
+    <div id="mobileMenu" class="hidden xl:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2 shadow-lg">
+      <div class="relative mb-3 md:hidden">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input
+          type="text"
+          id="mobileSearchInput"
+          placeholder="Tìm bài thí nghiệm..."
+          class="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-100 border border-slate-200 rounded-xl outline-none"
+        />
+      </div>
+
+      <!-- Auth buttons on mobile -->
+      <div id="mobileAuthGuest" class="grid grid-cols-2 gap-2 pb-2 border-b border-slate-100">
+        <button onclick="openAuthModal('login')" class="py-2.5 px-3 rounded-xl border border-brand-blue text-brand-blue font-bold text-xs flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Đăng nhập</span>
+        </button>
+        <button onclick="openAuthModal('register')" class="py-2.5 px-3 rounded-xl bg-brand-blue text-white font-bold text-xs flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Đăng ký</span>
+        </button>
+      </div>
+
+      <div id="mobileAuthUser" class="hidden items-center justify-between bg-blue-50 p-3 rounded-xl border border-blue-200 mb-2">
+        <div class="text-xs">
+          <p class="font-extrabold text-slate-900" id="mobileUserName">Người dùng</p>
+          <p class="text-brand-teal font-semibold" id="mobileUserRole">Vai trò</p>
+        </div>
+        <button onclick="logoutUser()" class="px-3 py-1.5 rounded-lg bg-rose-600 text-white text-xs font-bold">
+          Đăng xuất
+        </button>
+      </div>
+
+      <a href="#simulations" class="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-800 hover:bg-slate-100" data-i18n="nav.simulations">Mô phỏng</a>
+      <a href="#subjects" class="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-800 hover:bg-slate-100" data-i18n="nav.subjects">Môn học</a>
+      <a href="#interactive-demo" class="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-800 hover:bg-slate-100" data-i18n="nav.liveDemo">Phòng thí nghiệm mẫu</a>
+      <button onclick="openTeacherModal()" class="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-800 hover:bg-slate-100 flex items-center justify-between">
+        <span data-i18n="nav.teachers">Tài nguyên giáo viên</span>
+        <span class="bg-blue-100 text-brand-blue text-xs font-bold px-2 py-0.5 rounded-full">Mới</span>
+      </button>
+      <a href="#about" class="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-800 hover:bg-slate-100" data-i18n="nav.about">Giới thiệu</a>
+    </div>
+  </header>
+
+  <!-- ==================== 2. HERO SECTION (BANNER CHÍNH + ICON KHOA HỌC NỔI) ==================== -->
+  <section id="heroSection" class="relative overflow-hidden aurora-bg py-12 lg:py-20 border-b border-slate-200">
+    <!-- Quầng sáng nền -->
+    <div class="absolute inset-0 pointer-events-none opacity-35">
+      <div class="absolute -top-20 -left-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl"></div>
+      <div class="absolute top-1/2 -right-20 w-96 h-96 bg-teal-200 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/3 w-80 h-80 bg-amber-100 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Lớp Icon Khoa Học Nổi (Floating Science Icons Layer) -->
+    <div id="heroFloatingIcons" class="absolute inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+      <div class="floating-science-icon w-12 h-12 rounded-2xl bg-white/80 backdrop-blur-sm border border-blue-200/80 shadow-md flex items-center justify-center text-brand-blue text-xl"
+           style="top: 8%; left: 4%; --dur: 6.5s; --delay: 0s; --drift-x: 12px; --drift-y: -16px; --rot-start: -8deg; --rot-end: 14deg; opacity: 0.72;">
+        <i class="fa-solid fa-atom"></i>
+      </div>
+
+      <div class="floating-science-icon alt-float w-11 h-11 rounded-2xl bg-white/80 backdrop-blur-sm border border-teal-200/80 shadow-md flex items-center justify-center text-brand-teal text-lg"
+           style="top: 16%; left: 24%; --dur: 7.8s; --delay: -1.4s; --drift-x: -10px; --drift-y: -14px; --rot-start: 6deg; --rot-end: -12deg; opacity: 0.65;">
+        <i class="fa-solid fa-flask"></i>
+      </div>
+
+      <div class="floating-science-icon w-12 h-12 rounded-2xl bg-white/80 backdrop-blur-sm border border-emerald-200/80 shadow-md flex items-center justify-center text-emerald-600 text-xl"
+           style="top: 68%; left: 6%; --dur: 8.2s; --delay: -2.2s; --drift-x: 14px; --drift-y: -12px; --rot-start: 10deg; --rot-end: -8deg; opacity: 0.7;">
+        <i class="fa-solid fa-dna"></i>
+      </div>
+
+      <div class="floating-science-icon alt-float px-3 py-1.5 rounded-xl bg-white/85 backdrop-blur-sm border border-purple-200/80 shadow-md flex items-center justify-center text-purple-700 font-mono font-extrabold text-sm"
+           style="top: 78%; left: 28%; --dur: 6.8s; --delay: -0.9s; --drift-x: 10px; --drift-y: -15px; --rot-start: -5deg; --rot-end: 9deg; opacity: 0.72;">
+        π · √x
+      </div>
+
+      <div class="floating-science-icon w-11 h-11 rounded-2xl bg-white/80 backdrop-blur-sm border border-amber-200/80 shadow-md flex items-center justify-center text-amber-500 text-lg"
+           style="top: 10%; left: 48%; --dur: 7.4s; --delay: -3.1s; --drift-x: -12px; --drift-y: -14px; --rot-start: 4deg; --rot-end: 16deg; opacity: 0.68;">
+        <i class="fa-solid fa-lightbulb"></i>
+      </div>
+
+      <div class="floating-science-icon alt-float w-12 h-12 rounded-2xl bg-white/80 backdrop-blur-sm border border-rose-200/80 shadow-md flex items-center justify-center text-rose-600 text-lg"
+           style="top: 45%; left: 2%; --dur: 8.6s; --delay: -2.7s; --drift-x: 14px; --drift-y: 10px; --rot-start: -12deg; --rot-end: 8deg; opacity: 0.62;">
+        <i class="fa-solid fa-magnet"></i>
+      </div>
+
+      <div class="floating-science-icon w-11 h-11 rounded-2xl bg-white/80 backdrop-blur-sm border border-cyan-200/80 shadow-md flex items-center justify-center text-cyan-600 text-lg"
+           style="top: 82%; left: 52%; --dur: 7.2s; --delay: -1.8s; --drift-x: 12px; --drift-y: -14px; --rot-start: 0deg; --rot-end: 18deg; opacity: 0.65;">
+        <i class="fa-solid fa-rocket"></i>
+      </div>
+
+      <div class="floating-science-icon alt-float px-2.5 py-1 rounded-xl bg-white/85 backdrop-blur-sm border border-blue-200/80 shadow-md flex items-center justify-center text-brand-blue font-mono font-extrabold text-xs"
+           style="top: 22%; right: 4%; --dur: 6.9s; --delay: -2.5s; --drift-x: -10px; --drift-y: -14px; --rot-start: 7deg; --rot-end: -9deg; opacity: 0.72;">
+        E = mc²
+      </div>
+
+      <div class="floating-science-icon w-11 h-11 rounded-2xl bg-white/80 backdrop-blur-sm border border-teal-200/80 shadow-md flex items-center justify-center text-teal-600 text-lg"
+           style="top: 76%; right: 6%; --dur: 8.0s; --delay: -1.1s; --drift-x: -12px; --drift-y: -12px; --rot-start: -6deg; --rot-end: 10deg; opacity: 0.68;">
+        <i class="fa-solid fa-microscope"></i>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+
+        <!-- Bên Trái: Nội dung Hero -->
+        <div class="lg:col-span-7 text-center lg:text-left space-y-6">
+
+          <!-- Badge Thông Báo -->
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-blue-200 text-brand-blue text-xs sm:text-sm font-semibold shadow-sm">
+            <span class="flex h-2 w-2 rounded-full bg-brand-teal animate-ping"></span>
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span data-i18n="hero.badge">Chuẩn GDPT 2018 — Trực quan & Sáng tạo</span>
+          </div>
+
+          <!-- Tiêu đề nổi bật -->
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-[1.2] tracking-tight">
+            <span data-i18n="hero.title1">Phòng thí nghiệm khoa học ảo tương tác</span>
+            <span class="block mt-2 bg-gradient-to-r from-brand-blue via-blue-600 to-brand-teal bg-clip-text text-transparent" data-i18n="hero.title2">
+              — Học qua trải nghiệm trực quan
+            </span>
+          </h1>
+
+          <!-- Mô tả ngắn -->
+          <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal" data-i18n="hero.desc">
+            Kho mô phỏng miễn phí cho Vật lý, Hóa học, Sinh học, Vật lý địa cầu và Toán học dành cho phổ thông và giáo dục STEM.
+          </p>
+
+          <!-- Các nút CTA lớn -->
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2 flex-wrap">
+            <a
+              href="#simulations"
+              class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-brand-blue hover:bg-brand-blueHover text-white font-bold text-sm sm:text-base shadow-lg shadow-blue-600/25 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 group"
+            >
+              <i class="fa-solid fa-compass group-hover:rotate-45 transition-transform"></i>
+              <span data-i18n="hero.ctaExplore">Khám phá mô phỏng</span>
+              <i class="fa-solid fa-arrow-right text-xs opacity-70 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+
+            <button
+              onclick="openTeacherModal()"
+              class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/95 hover:bg-white text-slate-800 font-bold text-sm sm:text-base border-2 border-slate-300 hover:border-brand-teal transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 shadow-sm"
+            >
+              <i class="fa-solid fa-chalkboard-user text-brand-teal"></i>
+              <span data-i18n="hero.ctaTeacher">Dành cho giáo viên</span>
+            </button>
+
+            <a
+              href="#interactive-demo"
+              class="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-amber-500 hover:bg-brand-amberHover text-white font-bold text-sm sm:text-base shadow-md shadow-amber-500/25 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+            >
+              <i class="fa-solid fa-bolt"></i>
+              <span data-i18n="hero.ctaTryNow">Thử thí nghiệm Ohm</span>
+            </a>
+          </div>
+
+          <!-- Thống kê nhanh -->
+          <div class="pt-4 grid grid-cols-3 gap-4 border-t border-slate-200/80 max-w-lg mx-auto lg:mx-0 text-center sm:text-left">
+            <div>
+              <p class="text-2xl font-black text-brand-blue font-mono">120+</p>
+              <p class="text-xs font-semibold text-slate-500" data-i18n="stats.sims">Mô phỏng thí nghiệm</p>
+            </div>
+            <div>
+              <p class="text-2xl font-black text-brand-teal font-mono">50.000+</p>
+              <p class="text-xs font-semibold text-slate-500" data-i18n="stats.users">Học sinh & GV sử dụng</p>
+            </div>
+            <div>
+              <p class="text-2xl font-black text-amber-500 font-mono">100%</p>
+              <p class="text-xs font-semibold text-slate-500" data-i18n="stats.free">Miễn phí giáo dục</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bên Phải: Khung minh họa trực quan mô phỏng thí nghiệm (Rutherford-Bohr Atom & Wave Canvas) -->
+        <div class="lg:col-span-5">
+          <div class="relative bg-white/95 backdrop-blur-md rounded-3xl p-5 shadow-2xl border border-slate-200/90 hover:shadow-card-hover transition-all duration-300">
+
+            <!-- Window Bar -->
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-rose-400 inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span>
+                <span class="ml-2 text-xs font-mono font-bold text-slate-600 flex items-center gap-1.5">
+                  <i class="fa-solid fa-atom text-brand-blue"></i>
+                  <span>Rutherford-Bohr & Wave Preview</span>
+                </span>
+              </div>
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                60 FPS Live
+              </span>
+            </div>
+
+            <!-- Interactive Canvas Hero Widget -->
+            <div class="relative w-full h-72 sm:h-80 bg-slate-900 rounded-2xl overflow-hidden shadow-inner flex flex-col items-center justify-center">
+              <canvas id="heroCircuitCanvas" class="w-full h-full block cursor-pointer"></canvas>
+
+              <!-- Quick Hero Overlay Control -->
+              <div class="absolute bottom-3 inset-x-3 bg-slate-900/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/80 flex items-center justify-between text-xs text-slate-200">
+                <div class="flex items-center gap-2">
+                  <span class="text-amber-400 font-bold"><i class="fa-solid fa-atom animate-spin-slow"></i></span>
+                  <span class="font-medium text-[11px]" id="heroDemoLabel">Di chuột/Chạm để tăng năng lượng quỹ đạo</span>
+                </div>
+                <button
+                  onclick="window.location.href='#interactive-demo'"
+                  class="bg-brand-blue hover:bg-blue-500 text-white font-bold text-[11px] px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1"
+                >
+                  <span>Mở Lab Đầy Đủ</span>
+                  <i class="fa-solid fa-up-right-from-square text-[9px]"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Mini Info Bar dưới Hero Card -->
+            <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
+              <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-100 flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-brand-blue text-white flex items-center justify-center font-bold">
+                  <i class="fa-solid fa-wave-square"></i>
+                </div>
+                <div>
+                  <p class="font-bold text-slate-800">Tương tác trực quan</p>
+                  <p class="text-[11px] text-slate-500">Mô phỏng tức thì</p>
+                </div>
+              </div>
+              <div class="bg-teal-50 p-2.5 rounded-xl border border-teal-100 flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-brand-teal text-white flex items-center justify-center font-bold">
+                  <i class="fa-solid fa-tablet-screen-button"></i>
+                </div>
+                <div>
+                  <p class="font-bold text-slate-800">Đa nền tảng</p>
+                  <p class="text-[11px] text-slate-500">PC, iPad, Mobile</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. THANH LỌC & DANH MỤC 5 MÔN HỌC ==================== -->
+  <section id="subjects" class="py-8 bg-white border-b border-slate-200 sticky top-20 z-40 shadow-sm transition-shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+
+      <!-- Hàng 1: Bộ Lọc Theo Môn Học -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1.5" data-i18n="filter.subjectTitle">Môn học STEM</span>
+          <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1" id="subjectFilterContainer">
+            <button class="filter-subject-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap" data-subject="all">
+              <i class="fa-solid fa-layer-group"></i>
+              <span data-i18n="filter.all">Tất cả môn</span>
+            </button>
+            <button class="filter-subject-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap" data-subject="physics">
+              <i class="fa-solid fa-atom text-blue-600"></i>
+              <span data-i18n="filter.physics">Vật lý</span>
+            </button>
+            <button class="filter-subject-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap" data-subject="chemistry">
+              <i class="fa-solid fa-flask text-teal-600"></i>
+              <span data-i18n="filter.chemistry">Hóa học</span>
+            </button>
+            <button class="filter-subject-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap" data-subject="biology">
+              <i class="fa-solid fa-dna text-emerald-600"></i>
+              <span data-i18n="filter.biology">Sinh học</span>
+            </button>
+            <button class="filter-subject-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap" data-subject="earth">
+              <i class="fa-solid fa-earth-americas text-amber-600"></i>
+              <span data-i18n="filter.earth">Vật lý địa cầu</span>
+            </button>
+            <button class="filter-subject-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap" data-subject="math">
+              <i class="fa-solid fa-square-root-variable text-purple-600"></i>
+              <span data-i18n="filter.math">Toán học</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Đếm kết quả -->
+        <div class="flex items-center justify-between md:justify-end gap-3 pt-2 md:pt-0">
+          <span id="resultsCountBadge" class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+            Đang hiển thị: <strong class="text-brand-blue" id="currentCount">8</strong> mô phỏng
+          </span>
+        </div>
+      </div>
+
+      <!-- Hàng 2: Bộ Lọc Cấp Học -->
+      <div class="flex items-center gap-2 pt-2 border-t border-slate-100 overflow-x-auto pb-1">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2 whitespace-nowrap" data-i18n="filter.gradeTitle">
+          <i class="fa-solid fa-school text-slate-400 mr-1"></i>Cấp học:
+        </span>
+        <div class="flex items-center gap-1.5" id="gradeFilterContainer">
+          <button class="filter-grade-btn active px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap" data-grade="all" data-i18n="grade.all">
+            Tất cả cấp
+          </button>
+          <button class="filter-grade-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap" data-grade="primary" data-i18n="grade.primary">
+            Tiểu học (Lớp 1-5)
+          </button>
+          <button class="filter-grade-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap" data-grade="middle" data-i18n="grade.middle">
+            THCS (Lớp 6-9)
+          </button>
+          <button class="filter-grade-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap" data-grade="high" data-i18n="grade.high">
+            THPT (Lớp 10-12)
+          </button>
+          <button class="filter-grade-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap" data-grade="uni" data-i18n="grade.uni">
+            Đại học
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== 4. THƯ VIỆN THẺ THÍ NGHIỆM (SIMULATION GRID) ==================== -->
+  <section id="simulations" class="relative py-12 lg:py-16 bg-[#F8FAFC] overflow-hidden">
+    <!-- Floating icons trang trí khu vực Thư viện -->
+    <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+      <div class="floating-science-icon w-10 h-10 rounded-xl bg-white/75 border border-teal-200/70 shadow-sm flex items-center justify-center text-teal-600 text-base"
+           style="top: 6%; right: 5%; --dur: 7.5s; --delay: -0.5s; --drift-x: -8px; --drift-y: -12px; --rot-start: -6deg; --rot-end: 10deg; opacity: 0.45;">
+        <i class="fa-solid fa-flask-vial"></i>
+      </div>
+      <div class="floating-science-icon alt-float w-10 h-10 rounded-xl bg-white/75 border border-blue-200/70 shadow-sm flex items-center justify-center text-brand-blue text-base"
+           style="bottom: 8%; left: 3%; --dur: 8.4s; --delay: -2.4s; --drift-x: 10px; --drift-y: -10px; --rot-start: 8deg; --rot-end: -8deg; opacity: 0.42;">
+        <i class="fa-solid fa-atom"></i>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
+        <div>
+          <div class="inline-flex items-center gap-2 text-brand-teal text-xs font-bold uppercase tracking-wider mb-2">
+            <i class="fa-solid fa-shapes"></i>
+            <span data-i18n="grid.sectionBadge">Kho học liệu số tương tác</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight" data-i18n="grid.title">
+            Thư Viện Thí Nghiệm Khoa Học
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 mt-1" data-i18n="grid.subtitle">
+            Chọn một thí nghiệm để bắt đầu khám phá, điều chỉnh các biến số và quan sát hiện tượng khoa học.
+          </p>
+        </div>
+      </div>
+
+      <!-- Grid Container: Render bằng JavaScript -->
+      <div id="simulationGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"></div>
+
+      <!-- Thông báo khi không tìm thấy kết quả -->
+      <div id="noResultsAlert" class="hidden text-center py-16 px-4 bg-white rounded-3xl border border-dashed border-slate-300">
+        <div class="w-16 h-16 rounded-2xl bg-amber-50 text-amber-500 mx-auto flex items-center justify-center text-3xl mb-4">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-800" data-i18n="search.emptyTitle">Không tìm thấy mô phỏng phù hợp</h3>
+        <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto" data-i18n="search.emptyDesc">
+          Vui lòng thử đổi từ khóa tìm kiếm hoặc bấm nút "Tất cả môn" và "Tất cả cấp học" để hiển thị danh sách đầy đủ.
+        </p>
+        <button onclick="resetAllFilters()" class="mt-4 px-5 py-2.5 rounded-xl bg-brand-blue text-white text-xs font-bold hover:bg-blue-700 transition-colors">
+          <i class="fa-solid fa-rotate-left mr-1.5"></i>
+          <span data-i18n="search.reset">Khôi phục bộ lọc</span>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== 5. KHU VỰC TƯƠNG TÁC MÔ PHỎNG MẪU (ĐỊNH LUẬT OHM) ==================== -->
+  <section id="interactive-demo" class="py-14 lg:py-20 bg-gradient-to-b from-white via-slate-50 to-blue-50/40 border-t border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold uppercase tracking-wider mb-3">
+          <i class="fa-solid fa-bolt-lightning text-amber-600 animate-bounce"></i>
+          <span>Thí Nghiệm Thực Nghiệm Trực Tiếp</span>
+        </div>
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          Mô Phỏng Trực Tiếp: <span class="text-brand-blue">Định Luật Ohm</span> (I = U / R)
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base mt-2">
+          Kéo thanh trượt để thay đổi Hiệu điện thế (U) và Điện trở (R). Quan sát tốc độ dòng electron, độ sáng của đèn và công thức toán học biến đổi theo thời gian thực!
+        </p>
+      </div>
+
+      <!-- PhET Style Experiment Workstation Container -->
+      <div class="bg-white rounded-3xl shadow-xl border-2 border-slate-200 overflow-hidden">
+
+        <!-- Lab Header Toolbar -->
+        <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-brand-blue flex items-center justify-center font-bold text-amber-300">
+              <i class="fa-solid fa-bolt"></i>
+            </span>
+            <div>
+              <h3 class="font-extrabold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                <span>Định luật Ohm & Mạch Điện Một Chiều</span>
+                <span class="bg-blue-600/80 text-[11px] font-mono font-medium px-2 py-0.5 rounded">v2.4 PhET Engine</span>
+              </h3>
+            </div>
+          </div>
+
+          <!-- Controls Top Right -->
+          <div class="flex items-center gap-2">
+            <button
+              id="soundToggleBtn"
+              onclick="toggleSound()"
+              class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition-colors flex items-center gap-1.5"
+              title="Bật/Tắt âm thanh tương tác"
+            >
+              <i class="fa-solid fa-volume-high text-amber-400" id="soundIcon"></i>
+              <span id="soundLabel">Âm thanh</span>
+            </button>
+            <button
+              onclick="resetOhmSim()"
+              class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition-colors flex items-center gap-1.5"
+              title="Đặt lại thông số mặc định"
+            >
+              <i class="fa-solid fa-rotate-left"></i>
+              <span>Đặt lại</span>
+            </button>
+            <button
+              onclick="toggleLabFullscreen()"
+              class="px-3 py-1.5 rounded-lg bg-brand-blue hover:bg-blue-600 text-white text-xs font-semibold transition-colors flex items-center gap-1.5"
+              title="Toàn màn hình"
+            >
+              <i class="fa-solid fa-expand"></i>
+              <span class="hidden sm:inline">Toàn màn hình</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Interactive Workspace -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[520px]">
+
+          <!-- Cột Trái & Giữa: Canvas Mạch Điện & Biểu Thức PhET (8 cols) -->
+          <div class="lg:col-span-8 p-4 sm:p-6 bg-slate-900/95 flex flex-col justify-between relative overflow-hidden">
+
+            <!-- PhET Dynamic Formula Display -->
+            <div class="bg-slate-800/80 backdrop-blur-md rounded-2xl p-4 border border-slate-700/80 shadow-lg mb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Công thức PhET:</span>
+                <span class="text-xs text-slate-300">Kích thước chữ biến thiên theo giá trị</span>
+              </div>
+
+              <!-- Dynamic Ohm Formula Visualization -->
+              <div class="flex items-center gap-4 px-6 py-2 bg-slate-900 rounded-xl border border-slate-700 shadow-inner">
+                <div class="text-center">
+                  <span id="formulaI" class="font-black text-amber-400 font-mono transition-all duration-150 inline-block" style="font-size: 32px;">I</span>
+                  <span class="block text-[10px] text-amber-300/80 font-mono font-bold" id="formulaIVal">9.0 mA</span>
+                </div>
+
+                <span class="text-2xl font-black text-white font-mono">=</span>
+
+                <div class="flex flex-col items-center">
+                  <div class="text-center pb-1">
+                    <span id="formulaU" class="font-black text-blue-400 font-mono transition-all duration-150 inline-block" style="font-size: 30px;">U</span>
+                    <span class="block text-[10px] text-blue-300/80 font-mono font-bold" id="formulaUVal">4.5 V</span>
+                  </div>
+                  <div class="w-full h-1 bg-white/70 rounded-full my-0.5"></div>
+                  <div class="text-center pt-1">
+                    <span id="formulaR" class="font-black text-rose-400 font-mono transition-all duration-150 inline-block" style="font-size: 28px;">R</span>
+                    <span class="block text-[10px] text-rose-300/80 font-mono font-bold" id="formulaRVal">500 Ω</span>
+                  </div>
+                </div>
+
+                <div class="h-10 w-px bg-slate-700 mx-2 hidden sm:block"></div>
+
+                <div class="text-left hidden sm:block">
+                  <span class="text-[10px] uppercase font-bold text-slate-400 block">Công suất tiêu thụ</span>
+                  <span id="powerVal" class="text-sm font-bold font-mono text-emerald-400">P = 40.5 mW</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Canvas Mạch Điện Mô Phỏng Chính -->
+            <div class="relative flex-1 w-full min-h-[340px] sm:min-h-[380px] bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
+              <canvas id="ohmSimCanvas" class="w-full h-full block"></canvas>
+
+              <!-- Live Legend Floating Overlay -->
+              <div class="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-700/80 text-[11px] text-slate-300 space-y-1 pointer-events-none">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
+                  <span>Hạt Electron mang điện tích âm (e⁻)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-1 bg-amber-400 rounded-full inline-block"></span>
+                  <span>Chiều dòng điện quy ước (+) &rarr; (-)</span>
+                </div>
+              </div>
+
+              <!-- Switch Mạch -->
+              <div class="absolute bottom-3 right-3 flex items-center gap-2 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-700">
+                <button
+                  id="circuitSwitchBtn"
+                  onclick="toggleCircuitSwitch()"
+                  class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white"
+                >
+                  <i class="fa-solid fa-toggle-on text-base" id="circuitSwitchIcon"></i>
+                  <span id="circuitSwitchLabel">Đóng mạch (ON)</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-3 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
+              <span class="flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-info text-brand-teal"></i>
+                <span>Tốc độ hạt electron tỷ lệ thuận với cường độ dòng điện I.</span>
+              </span>
+              <span class="font-mono text-slate-500" id="fpsCounter">60 FPS</span>
+            </div>
+
+          </div>
+
+          <!-- Cột Phải: Bảng Điều Khiển Tham Số & Đồng Hồ Đo Số Liệu (4 cols) -->
+          <div class="lg:col-span-4 p-5 sm:p-6 bg-slate-50 border-t lg:border-t-0 lg:border-l border-slate-200 flex flex-col justify-between space-y-6">
+
+            <div class="space-y-6">
+              <div class="flex items-center justify-between">
+                <h4 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                  <i class="fa-solid fa-sliders text-brand-blue"></i>
+                  <span>Bảng Điều Khiển Biến Số</span>
+                </h4>
+                <span class="text-xs bg-blue-100 text-brand-blue font-bold px-2 py-0.5 rounded-md">Realtime</span>
+              </div>
+
+              <!-- 1. Thanh trượt Điện Áp U -->
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-blue-100 text-brand-blue flex items-center justify-center font-bold text-xs">U</span>
+                    <label for="voltageSlider" class="text-sm font-bold text-slate-800">Hiệu điện thế (U)</label>
+                  </div>
+                  <span class="font-mono font-extrabold text-lg text-brand-blue" id="voltageDisplay">4.5 V</span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                  <button onclick="adjustVoltage(-0.5)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-sm transition-colors">−</button>
+                  <input
+                    type="range"
+                    id="voltageSlider"
+                    min="0.1"
+                    max="12.0"
+                    step="0.1"
+                    value="4.5"
+                    class="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-blue"
+                  />
+                  <button onclick="adjustVoltage(0.5)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-sm transition-colors">+</button>
+                </div>
+
+                <div class="flex justify-between text-[11px] text-slate-400 font-mono">
+                  <span>0.1 V (1 pin yếu)</span>
+                  <span>4.5 V (3 pin)</span>
+                  <span>12.0 V (Ắc quy)</span>
+                </div>
+              </div>
+
+              <!-- 2. Thanh trượt Điện Trở R -->
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-xs">R</span>
+                    <label for="resistanceSlider" class="text-sm font-bold text-slate-800">Điện trở (R)</label>
+                  </div>
+                  <span class="font-mono font-extrabold text-lg text-rose-600" id="resistanceDisplay">500 Ω</span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                  <button onclick="adjustResistance(-50)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-sm transition-colors">−</button>
+                  <input
+                    type="range"
+                    id="resistanceSlider"
+                    min="20"
+                    max="1000"
+                    step="10"
+                    value="500"
+                    class="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-600"
+                  />
+                  <button onclick="adjustResistance(50)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-sm transition-colors">+</button>
+                </div>
+
+                <div class="flex justify-between text-[11px] text-slate-400 font-mono">
+                  <span>20 Ω (Dẫn tốt)</span>
+                  <span>500 Ω</span>
+                  <span>1000 Ω (Cản lớn)</span>
+                </div>
+              </div>
+
+              <!-- 3. Bảng Đồng Hồ Hiển Thị Số Liệu -->
+              <div class="bg-slate-900 rounded-2xl p-4 text-white space-y-3 shadow-md">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-gauge-high text-amber-400"></i>
+                    <span>Đồng hồ đo điện tử</span>
+                  </span>
+                  <span class="text-[10px] font-mono text-emerald-400">AUTO-RANGE</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                  <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700">
+                    <span class="text-[10px] font-semibold text-slate-400 uppercase block">Dòng điện (I)</span>
+                    <span class="text-xl font-black font-mono text-amber-400" id="currentDigitalVal">9.00 mA</span>
+                    <span class="text-[10px] text-slate-400 block font-mono mt-0.5" id="currentAmpVal">(0.009 A)</span>
+                  </div>
+
+                  <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700">
+                    <span class="text-[10px] font-semibold text-slate-400 uppercase block">Công suất (P = U·I)</span>
+                    <span class="text-xl font-black font-mono text-emerald-400" id="powerDigitalVal">40.5 mW</span>
+                    <span class="text-[10px] text-slate-400 block font-mono mt-0.5" id="bulbState">Đèn sáng vừa</span>
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-300">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="showCurrentFlowCheck" checked onchange="toggleCurrentFlowMode()" class="rounded text-brand-blue focus:ring-brand-blue" />
+                    <span>Dòng electron chuyển động</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="showResistanceColorCheck" checked onchange="toggleResistorColorCodes()" class="rounded text-rose-500 focus:ring-rose-500" />
+                    <span>Vạch màu điện trở</span>
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Tải tài liệu hướng dẫn học tập -->
+            <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <i class="fa-solid fa-file-lines text-amber-600 text-2xl"></i>
+                <div>
+                  <p class="text-xs font-bold text-slate-800">Phiếu học tập Định luật Ohm</p>
+                  <p class="text-[11px] text-slate-500">Dành cho học sinh làm bài thu hoạch</p>
+                </div>
+              </div>
+              <button onclick="downloadWorksheet('ohm')" class="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+                <i class="fa-solid fa-download"></i>
+                <span>Tải PDF</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== 6. PHẦN DÀNH CHO GIÁO VIÊN ==================== -->
+  <section class="py-14 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+        <div class="lg:col-span-5 space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-bold uppercase tracking-wider">
+            <i class="fa-solid fa-chalkboard-user"></i>
+            <span>STEM Teacher Toolkit</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Công Cụ Hỗ Trợ Đắc Lực Cho Thầy Cô Đổi Mới Phương Pháp Dạy Học
+          </h2>
+          <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+            Mỗi mô phỏng trên STEMLab VN đều được tích hợp sẵn giáo án điện tử gợi ý, bảng câu hỏi kích thích tư duy và mã nhúng trực tiếp vào các hệ thống quản lý học tập.
+          </p>
+
+          <div class="space-y-3 pt-2">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-blue-100 text-brand-blue flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-800 text-sm">Tương thích hoàn toàn màn hình tương tác & máy chiếu</h4>
+                <p class="text-xs text-slate-500">Giao diện cảm ứng nhạy bén, hoạt động mượt mà không cần cài đặt thêm phần mềm.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-teal-100 text-brand-teal flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
+                <i class="fa-solid fa-code"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-800 text-sm">Nhúng mã Iframe vào LMS (Moodle, MS Teams, Google Classroom)</h4>
+                <p class="text-xs text-slate-500">Giáo viên chỉ cần copy mã nhúng 1 cú nhấp chuột để đưa vào bài tập giao về nhà.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
+                <i class="fa-solid fa-file-arrow-down"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-800 text-sm">Phiếu bài tập thí nghiệm chuẩn hóa</h4>
+                <p class="text-xs text-slate-500">Bộ câu hỏi trắc nghiệm và tự luận phân hóa theo 4 mức độ nhận thức.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 flex flex-wrap gap-3">
+            <button onclick="openTeacherModal()" class="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold shadow-md shadow-purple-500/20 transition-all flex items-center gap-2">
+              <i class="fa-solid fa-folder-open"></i>
+              <span>Khám phá Kho Tài Nguyên Giáo Viên</span>
+            </button>
+            <button onclick="openAuthModal('register')" class="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-bold transition-all flex items-center gap-2">
+              <i class="fa-solid fa-user-check text-brand-blue"></i>
+              <span>Tạo tài khoản lưu tiến độ</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-brand-blue text-white flex items-center justify-center text-xl mb-4 shadow-md shadow-blue-500/20">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <h3 class="font-extrabold text-slate-800 text-base mb-1">Dạy học Khám phá</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Học sinh tự do thay đổi tham số, thử nghiệm các giả thuyết "Nếu... thì..." mà không sợ nguy cơ cháy nổ hay hỏng hóc thiết bị thật.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-gradient-to-br from-teal-50 to-white border border-teal-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-brand-teal text-white flex items-center justify-center text-xl mb-4 shadow-md shadow-teal-500/20">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <h3 class="font-extrabold text-slate-800 text-base mb-1">Dữ liệu Định lượng</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Tất cả các mô phỏng đều dựa trên phương trình toán học và định luật vật lý chính xác để rèn luyện kỹ năng phân tích số liệu.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-white border border-amber-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xl mb-4 shadow-md shadow-amber-500/20">
+              <i class="fa-solid fa-universal-access"></i>
+            </div>
+            <h3 class="font-extrabold text-slate-800 text-base mb-1">Dễ dàng Tiếp cận</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Hỗ trợ phím tắt bàn phím, phóng to thu nhỏ công thức, tương thích máy tính bảng học đường và kết nối internet tốc độ thấp.
+            </p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xl mb-4 shadow-md shadow-emerald-600/20">
+              <i class="fa-solid fa-share-nodes"></i>
+            </div>
+            <h3 class="font-extrabold text-slate-800 text-base mb-1">Chia sẻ Nhanh</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Tạo liên kết trực tiếp kèm trạng thái thí nghiệm được lưu sẵn để học sinh mở ra là thấy đúng bài giảng thầy cô yêu cầu.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 7. GIỚI THIỆU ==================== -->
+  <section id="about" class="py-14 bg-slate-50 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="max-w-3xl mx-auto space-y-4">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight" data-i18n="about.title">
+          Về Dự Án Thí Nghiệm Khoa Học STEMLab VN
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base leading-relaxed" data-i18n="about.desc">
+          Lấy cảm hứng từ sáng kiến mô phỏng khoa học tương tác PhET (Đại học Colorado Boulder), STEMLab VN ra đời với sứ mệnh mang lại trải nghiệm giáo dục khoa học mở, trực quan, miễn phí và thuần Việt cho hàng triệu học sinh, giáo viên trên khắp mọi miền đất nước.
+        </p>
+        <div class="pt-4 flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-500">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-code-branch text-brand-blue"></i> Open Source (Mã nguồn mở)</span>
+          <span class="text-slate-300">•</span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-heart text-rose-500"></i> Vì cộng đồng giáo dục Việt Nam</span>
+          <span class="text-slate-300">•</span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-brand-teal"></i> Giấy phép Creative Commons CC-BY 4.0</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-slate-900 text-slate-300 pt-12 pb-8 mt-auto border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-10 border-b border-slate-800">
+
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-blue to-brand-teal flex items-center justify-center text-white shadow-md">
+              <i class="fa-solid fa-atom text-xl"></i>
+            </div>
+            <span class="text-xl font-extrabold text-white">STEM<span class="text-brand-teal">Lab</span> <span class="text-xs bg-amber-500 text-slate-900 px-1.5 py-0.5 rounded font-bold">VN</span></span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
+            Nền tảng thí nghiệm khoa học ảo mô phỏng tương tác cao, thiết kế thân thiện cho học sinh và giáo viên STEM các cấp. Nâng cao năng lực tự nghiên cứu và tư duy logic qua trải nghiệm trực quan.
+          </p>
+          <div class="flex items-center gap-3 pt-2 text-slate-400">
+            <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-brand-blue hover:text-white flex items-center justify-center text-sm transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-brand-blue hover:text-white flex items-center justify-center text-sm transition-colors"><i class="fa-brands fa-youtube"></i></a>
+            <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-brand-blue hover:text-white flex items-center justify-center text-sm transition-colors"><i class="fa-brands fa-github"></i></a>
+            <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-brand-blue hover:text-white flex items-center justify-center text-sm transition-colors"><i class="fa-solid fa-envelope"></i></a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-3" data-i18n="footer.subjects">Môn học</h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="#subjects" onclick="filterBySubject('physics')" class="hover:text-white transition-colors">Vật lý (Physics)</a></li>
+            <li><a href="#subjects" onclick="filterBySubject('chemistry')" class="hover:text-white transition-colors">Hóa học (Chemistry)</a></li>
+            <li><a href="#subjects" onclick="filterBySubject('biology')" class="hover:text-white transition-colors">Sinh học (Biology)</a></li>
+            <li><a href="#subjects" onclick="filterBySubject('earth')" class="hover:text-white transition-colors">Vật lý địa cầu (Earth Sci)</a></li>
+            <li><a href="#subjects" onclick="filterBySubject('math')" class="hover:text-white transition-colors">Toán học (Math)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-3" data-i18n="footer.resources">Tài nguyên STEM</h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="javascript:openTeacherModal()" class="hover:text-white transition-colors">Giáo án gợi ý 5E</a></li>
+            <li><a href="javascript:downloadWorksheet('all')" class="hover:text-white transition-colors">Phiếu học tập (Worksheet)</a></li>
+            <li><a href="javascript:openEmbedGuide()" class="hover:text-white transition-colors">Hướng dẫn nhúng Iframe</a></li>
+            <li><a href="#about" class="hover:text-white transition-colors">Chuẩn GDPT 2018</a></li>
+            <li><a href="javascript:openContactModal()" class="hover:text-white transition-colors">Góp ý mô phỏng mới</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-3" data-i18n="footer.legal">Bản quyền & Pháp lý</h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="#" class="hover:text-white transition-colors">Điều khoản sử dụng</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Chính sách bảo mật</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Giấy phép Creative Commons</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">PhET Collaboration</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
+        <p>© 2026 STEMLab VN. Dự án thí nghiệm khoa học ảo phục vụ cộng đồng giáo dục.</p>
+        <p>Lấy cảm hứng từ PhET Interactive Simulations, University of Colorado Boulder.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- MODAL 1: CHẠY MÔ PHỎNG NÂNG CAO -->
+  <div id="simModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-sm transition-opacity">
+    <div class="bg-white w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] border border-slate-200">
+
+      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span id="modalSimIcon" class="w-9 h-9 rounded-xl bg-brand-blue flex items-center justify-center text-lg text-amber-300">
+            <i class="fa-solid fa-atom"></i>
+          </span>
+          <div>
+            <h3 id="modalSimTitle" class="font-extrabold text-base sm:text-lg">Tên bài mô phỏng</h3>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span id="modalSimSubject" class="text-[11px] font-bold px-2 py-0.5 rounded bg-blue-700">Vật lý</span>
+              <span id="modalSimGrade" class="text-[11px] text-slate-400">THPT (Lớp 10-12)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="toggleModalFullscreen()" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors" title="Toàn màn hình">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+          <button onclick="closeSimModal()" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-rose-600 transition-colors" title="Đóng">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100 flex flex-col justify-center" id="modalSimContainer"></div>
+
+      <div class="bg-white px-6 py-3 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-keyboard text-slate-400"></i>
+          <span>Dùng chuột kéo thả hoặc điều chỉnh thanh trượt để khám phá quy luật khoa học.</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="copyEmbedCodeCurrentSim()" class="text-brand-blue hover:underline font-bold flex items-center gap-1">
+            <i class="fa-solid fa-code"></i> Lấy mã nhúng (Embed)
+          </button>
+          <button onclick="closeSimModal()" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold transition-colors">
+            Đóng lại
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL 2: TÀI NGUYÊN GIÁO VIÊN -->
+  <div id="teacherModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 max-h-[90vh] flex flex-col">
+      <div class="bg-purple-900 text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-700 flex items-center justify-center text-xl text-amber-300">
+            <i class="fa-solid fa-chalkboard-user"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-lg">Cổng Tài Nguyên Giáo Viên STEM</h3>
+            <p class="text-xs text-purple-200">Kế hoạch bài dạy 5E, Phiếu học tập & Hướng dẫn tích hợp</p>
+          </div>
+        </div>
+        <button onclick="closeTeacherModal()" class="p-2 text-purple-200 hover:text-white hover:bg-purple-800 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-5 text-sm">
+        <div class="bg-purple-50 p-4 rounded-2xl border border-purple-200 text-purple-900">
+          <h4 class="font-bold flex items-center gap-2 mb-1">
+            <i class="fa-solid fa-gift text-purple-600"></i>
+            Bộ tài liệu số hóa miễn phí 100%
+          </h4>
+          <p class="text-xs text-purple-800 leading-relaxed">
+            STEMLab VN cung cấp đầy đủ phiếu học tập cho toàn bộ các thí nghiệm mô phỏng, được thiết kế theo tiến trình học tập khám phá 5E.
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="font-bold text-slate-800 text-sm">Danh mục tài liệu tải về ngay:</h4>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+              <div>
+                <p class="font-bold text-slate-800">Phiếu học tập: Định luật Ohm</p>
+                <p class="text-[11px] text-slate-500">Vật lý 9 & 11 • Tài liệu thí nghiệm</p>
+              </div>
+              <button onclick="downloadWorksheet('ohm')" class="px-2.5 py-1.5 rounded-lg bg-brand-blue text-white font-bold hover:bg-blue-700">
+                <i class="fa-solid fa-download"></i> Tải
+              </button>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+              <div>
+                <p class="font-bold text-slate-800">Phiếu: Cân bằng phương trình</p>
+                <p class="text-[11px] text-slate-500">Hóa học 8 & 10 • Tài liệu thí nghiệm</p>
+              </div>
+              <button onclick="downloadWorksheet('chem')" class="px-2.5 py-1.5 rounded-lg bg-brand-teal text-white font-bold hover:bg-teal-700">
+                <i class="fa-solid fa-download"></i> Tải
+              </button>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+              <div>
+                <p class="font-bold text-slate-800">Phiếu: Con lắc đơn & Năng lượng</p>
+                <p class="text-[11px] text-slate-500">Vật lý 10 & 12 • Tài liệu thí nghiệm</p>
+              </div>
+              <button onclick="downloadWorksheet('pendulum')" class="px-2.5 py-1.5 rounded-lg bg-amber-500 text-white font-bold hover:bg-amber-600">
+                <i class="fa-solid fa-download"></i> Tải
+              </button>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+              <div>
+                <p class="font-bold text-slate-800">Giáo án mẫu 5E tổng thể</p>
+                <p class="text-[11px] text-slate-500">Tài liệu tham khảo cho GV</p>
+              </div>
+              <button onclick="downloadWorksheet('bundle')" class="px-2.5 py-1.5 rounded-lg bg-purple-600 text-white font-bold hover:bg-purple-700">
+                <i class="fa-solid fa-file-zipper"></i> Tải
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 rounded-2xl p-4 text-white space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs uppercase text-slate-400">Mã nhúng mẫu vào Google Classroom / Moodle:</span>
+            <button onclick="copyCode('sampleIframeCode')" class="text-xs text-brand-teal hover:underline font-bold">
+              <i class="fa-regular fa-copy"></i> Sao chép
+            </button>
+          </div>
+          <pre id="sampleIframeCode" class="text-[11px] font-mono bg-slate-950 p-2.5 rounded-lg text-emerald-400 overflow-x-auto">&lt;iframe src="https://stemlab.edu.vn/embed/ohm" width="800" height="500" allowfullscreen&gt;&lt;/iframe&gt;</pre>
+        </div>
+
+      </div>
+
+      <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end">
+        <button onclick="closeTeacherModal()" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs">
+          Hoàn tất
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: ĐĂNG NHẬP & ĐĂNG KÝ NGƯỜI DÙNG (AUTH MODAL) -->
+  <div id="authModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm transition-opacity">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-200 relative">
+
+      <!-- Header Gradient -->
+      <div class="bg-gradient-to-r from-brand-blue via-blue-600 to-brand-teal p-6 text-white relative">
+        <button
+          onclick="closeAuthModal()"
+          aria-label="Đóng cửa sổ đăng nhập"
+          class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-amber-300 text-lg">
+            <i class="fa-solid fa-atom animate-spin-slow"></i>
+          </div>
+          <div>
+            <h3 id="authModalTitle" class="text-xl font-extrabold tracking-tight">Đăng nhập STEMLab VN</h3>
+            <p id="authModalSubtitle" class="text-xs text-blue-100">Lưu kết quả thí nghiệm & phiếu học tập cá nhân</p>
+          </div>
+        </div>
+
+        <!-- Tabs chuyển giữa Đăng nhập và Đăng ký -->
+        <div class="grid grid-cols-2 gap-1.5 bg-slate-950/25 p-1 rounded-2xl mt-4">
+          <button
+            type="button"
+            id="tabLoginBtn"
+            onclick="switchAuthTab('login')"
+            class="py-2 rounded-xl text-xs font-extrabold transition-all bg-white text-brand-blue shadow-sm"
+          >
+            <i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng nhập
+          </button>
+          <button
+            type="button"
+            id="tabRegisterBtn"
+            onclick="switchAuthTab('register')"
+            class="py-2 rounded-xl text-xs font-extrabold transition-all text-white/85 hover:text-white"
+          >
+            <i class="fa-solid fa-user-plus mr-1"></i> Đăng ký tài khoản
+          </button>
+        </div>
+      </div>
+
+      <!-- Thông báo lỗi / trạng thái form -->
+      <div id="authFeedbackBox" class="hidden mx-6 mt-4 p-3 rounded-xl text-xs font-semibold border"></div>
+
+      <!-- FORM ĐĂNG NHẬP -->
+      <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="p-6 space-y-4">
+        <div>
+          <label for="loginEmail" class="block text-xs font-bold text-slate-700 mb-1.5">Email hoặc Tên đăng nhập</label>
+          <div class="relative">
+            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input
+              type="text"
+              id="loginEmail"
+              required
+              placeholder="hocsinh@stemlab.edu.vn"
+              class="w-full pl-9 pr-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white border border-slate-200 focus:border-brand-blue rounded-xl outline-none transition-all"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="loginPassword" class="block text-xs font-bold text-slate-700">Mật khẩu</label>
+            <button type="button" onclick="showToast('Liên kết đặt lại mật khẩu đã được gửi tới email của bạn.')" class="text-[11px] font-semibold text-brand-blue hover:underline">
+              Quên mật khẩu?
+            </button>
+          </div>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input
+              type="password"
+              id="loginPassword"
+              required
+              placeholder="••••••••"
+              class="w-full pl-9 pr-10 py-2.5 text-sm bg-slate-50 focus:bg-white border border-slate-200 focus:border-brand-blue rounded-xl outline-none transition-all"
+            />
+            <button
+              type="button"
+              onclick="togglePasswordVisibility('loginPassword', 'loginEyeIcon')"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+              aria-label="Hiện/ẩn mật khẩu"
+            >
+              <i id="loginEyeIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-600">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="rememberMeCheck" checked class="rounded text-brand-blue focus:ring-brand-blue" />
+            <span>Ghi nhớ phiên đăng nhập</span>
+          </label>
+          <button type="button" onclick="fillDemoStudentAccount()" class="text-brand-teal font-bold hover:underline">
+            Dùng tài khoản mẫu
+          </button>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-3 rounded-xl bg-brand-blue hover:bg-brand-blueHover text-white font-extrabold text-sm shadow-lg shadow-blue-600/25 transition-all flex items-center justify-center gap-2"
+        >
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Đăng nhập vào Phòng Lab</span>
+        </button>
+      </form>
+
+      <!-- FORM ĐĂNG KÝ -->
+      <form id="registerForm" onsubmit="handleRegisterSubmit(event)" class="hidden p-6 space-y-4">
+        <div>
+          <label for="regFullName" class="block text-xs font-bold text-slate-700 mb-1.5">Họ và tên</label>
+          <div class="relative">
+            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input
+              type="text"
+              id="regFullName"
+              required
+              placeholder="Nguyễn Minh Anh"
+              class="w-full pl-9 pr-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white border border-slate-200 focus:border-brand-teal rounded-xl outline-none transition-all"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="regEmail" class="block text-xs font-bold text-slate-700 mb-1.5">Email</label>
+            <input
+              type="email"
+              id="regEmail"
+              required
+              placeholder="minhanh@truonghoc.edu.vn"
+              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white border border-slate-200 focus:border-brand-teal rounded-xl outline-none transition-all"
+            />
+          </div>
+
+          <div>
+            <label for="regRole" class="block text-xs font-bold text-slate-700 mb-1.5">Vai trò</label>
+            <select
+              id="regRole"
+              class="w-full px-3 py-2.5 text-sm font-semibold bg-slate-50 focus:bg-white border border-slate-200 focus:border-brand-teal rounded-xl outline-none transition-all"
+            >
+              <option value="Học sinh STEM">Học sinh</option>
+              <option value="Giáo viên STEM">Giáo viên</option>
+              <option value="Sinh viên / Nghiên cứu">Sinh viên / Khác</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="regPassword" class="block text-xs font-bold text-slate-700 mb-1.5">Mật khẩu (≥ 6 ký tự)</label>
+            <div class="relative">
+              <input
+                type="password"
+                id="regPassword"
+                required
+                minlength="6"
+                placeholder="••••••••"
+                class="w-full pl-3.5 pr-9 py-2.5 text-sm bg-slate-50 focus:bg-white border border-slate-200 focus:border-brand-teal rounded-xl outline-none transition-all"
+              />
+              <button
+                type="button"
+                onclick="togglePasswordVisibility('regPassword', 'regEyeIcon')"
+                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                aria-label="Hiện/ẩn mật khẩu đăng ký"
+              >
+                <i id="regEyeIcon" class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label for="regConfirmPassword" class="block text-xs font-bold text-slate-700 mb-1.5">Nhập lại mật khẩu</label>
+            <input
+              type="password"
+              id="regConfirmPassword"
+              required
+              minlength="6"
+              placeholder="••••••••"
+              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white border border-slate-200 focus:border-brand-teal rounded-xl outline-none transition-all"
+            />
+          </div>
+        </div>
+
+        <label class="flex items-start gap-2 text-xs text-slate-600 cursor-pointer select-none">
+          <input type="checkbox" id="agreeTermsCheck" required class="mt-0.5 rounded text-brand-teal focus:ring-brand-teal" />
+          <span>Tôi đồng ý với điều khoản sử dụng và chính sách bảo mật giáo dục của STEMLab VN.</span>
+        </label>
+
+        <button
+          type="submit"
+          class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-teal to-emerald-600 hover:opacity-95 text-white font-extrabold text-sm shadow-lg shadow-teal-600/25 transition-all flex items-center justify-center gap-2"
+        >
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Đăng ký tài khoản miễn phí</span>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 hidden bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 transition-all transform translate-y-4">
+    <i class="fa-solid fa-circle-check text-emerald-400 text-lg" id="toastIcon"></i>
+    <span class="text-xs sm:text-sm font-semibold" id="toastMessage">Thông báo</span>
+  </div>
+
+  <!-- ==================== APPLICATION SCRIPTS ==================== -->
+  <script>
+    // 1. SIMULATIONS DATABASE
+    const SIMULATIONS_DATA = [
+      {
+        id: "ohm-law",
+        title_vi: "Định luật Ohm & Mạch điện",
+        title_en: "Ohm's Law & DC Circuits",
+        subject: "physics",
+        subject_vi: "Vật lý",
+        subject_en: "Physics",
+        grade: "middle",
+        grade_label_vi: "THCS & THPT",
+        grade_label_en: "Middle & High School",
+        subjectIcon: "fa-solid fa-atom",
+        rating: 4.9,
+        reviews: "32.4k",
+        desc_vi: "Khám phá mối quan hệ giữa hiệu điện thế (U), cường độ dòng điện (I) và điện trở (R) trong mạch điện một chiều kín.",
+        desc_en: "Explore the relationship between voltage (V), current (I), and resistance (R) in a closed DC electrical circuit.",
+        hasLiveDemo: true,
+        svgVisual: `
+          <svg viewBox="0 0 400 220" class="w-full h-full object-cover">
+            <defs>
+              <linearGradient id="gradOhm" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1e1b4b" />
+                <stop offset="100%" stop-color="#0f172a" />
+              </linearGradient>
+              <filter id="glowYellow">
+                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <rect width="400" height="220" fill="url(#gradOhm)"/>
+            <path d="M 60 50 L 340 50 L 340 170 L 60 170 Z" fill="none" stroke="#3b82f6" stroke-width="4" stroke-dasharray="6,6" opacity="0.8"/>
+            <g transform="translate(40, 90)">
+              <rect x="0" y="0" width="40" height="20" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+              <rect x="4" y="2" width="28" height="16" fill="#f59e0b"/>
+              <rect x="40" y="6" width="4" height="8" rx="1" fill="#cbd5e1"/>
+              <text x="18" y="14" fill="#ffffff" font-size="9" font-weight="bold" font-family="monospace">+</text>
+            </g>
+            <g transform="translate(160, 42)">
+              <rect x="0" y="0" width="80" height="16" rx="4" fill="#fbbf24" stroke="#d97706" stroke-width="2"/>
+              <line x1="20" y1="0" x2="20" y2="16" stroke="#b91c1c" stroke-width="3"/>
+              <line x1="36" y1="0" x2="36" y2="16" stroke="#15803d" stroke-width="3"/>
+              <line x1="52" y1="0" x2="52" y2="16" stroke="#0284c7" stroke-width="3"/>
+              <line x1="68" y1="0" x2="68" y2="16" stroke="#ca8a04" stroke-width="3"/>
+            </g>
+            <g transform="translate(340, 110)">
+              <circle cx="0" cy="0" r="22" fill="#fbbf24" filter="url(#glowYellow)" opacity="0.85"/>
+              <circle cx="0" cy="0" r="14" fill="#fef08a" stroke="#f59e0b" stroke-width="2"/>
+              <path d="M -5 -3 Q 0 -10 5 -3" fill="none" stroke="#b45309" stroke-width="2"/>
+            </g>
+            <circle cx="110" cy="50" r="4" fill="#60a5fa"/>
+            <circle cx="280" cy="50" r="4" fill="#60a5fa"/>
+            <circle cx="340" cy="80" r="4" fill="#60a5fa"/>
+            <circle cx="340" cy="145" r="4" fill="#60a5fa"/>
+            <circle cx="220" cy="170" r="4" fill="#60a5fa"/>
+            <circle cx="120" cy="170" r="4" fill="#60a5fa"/>
+            <rect x="250" y="130" width="80" height="28" rx="6" fill="#1e293b" stroke="#334155"/>
+            <text x="290" y="148" fill="#38bdf8" font-size="12" font-weight="bold" font-family="monospace" text-anchor="middle">I = U / R</text>
+          </svg>
+        `
+      },
+      {
+        id: "chemical-equation",
+        title_vi: "Cân bằng Phương trình Hóa học",
+        title_en: "Balancing Chemical Equations",
+        subject: "chemistry",
+        subject_vi: "Hóa học",
+        subject_en: "Chemistry",
+        grade: "middle",
+        grade_label_vi: "THCS & THPT",
+        grade_label_en: "Middle & High School",
+        subjectIcon: "fa-solid fa-flask",
+        rating: 4.8,
+        reviews: "28.1k",
+        desc_vi: "Tương tác lắp ghép nguyên tử, phân tử trực quan để hiểu bản chất định luật bảo toàn khối lượng và cân bằng phản ứng.",
+        desc_en: "Visually combine atoms and molecules to master the law of conservation of mass and equation balancing.",
+        hasLiveDemo: false,
+        svgVisual: `
+          <svg viewBox="0 0 400 220" class="w-full h-full object-cover">
+            <defs>
+              <linearGradient id="gradChem" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#064e3b" />
+                <stop offset="100%" stop-color="#0f172a" />
+              </linearGradient>
+            </defs>
+            <rect width="400" height="220" fill="url(#gradChem)"/>
+            <g transform="translate(60, 100)">
+              <circle cx="0" cy="0" r="16" fill="#3b82f6" stroke="#60a5fa" stroke-width="2"/>
+              <text x="0" y="5" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">N</text>
+              <circle cx="26" cy="0" r="16" fill="#3b82f6" stroke="#60a5fa" stroke-width="2"/>
+              <text x="26" y="5" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">N</text>
+            </g>
+            <text x="120" y="106" fill="#10b981" font-size="24" font-weight="bold" text-anchor="middle">+</text>
+            <g transform="translate(170, 75)">
+              <circle cx="0" cy="0" r="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+              <circle cx="15" cy="0" r="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+            </g>
+            <g transform="translate(170, 105)">
+              <circle cx="0" cy="0" r="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+              <circle cx="15" cy="0" r="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+            </g>
+            <g transform="translate(170, 135)">
+              <circle cx="0" cy="0" r="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+              <circle cx="15" cy="0" r="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+            </g>
+            <g transform="translate(225, 100)">
+              <line x1="0" y1="0" x2="35" y2="0" stroke="#f59e0b" stroke-width="4"/>
+              <polygon points="35,-6 45,0 35,6" fill="#f59e0b"/>
+            </g>
+            <g transform="translate(310, 80)">
+              <circle cx="0" cy="0" r="16" fill="#3b82f6"/>
+              <text x="0" y="5" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">N</text>
+              <circle cx="-16" cy="14" r="9" fill="#f8fafc"/>
+              <circle cx="0" cy="20" r="9" fill="#f8fafc"/>
+              <circle cx="16" cy="14" r="9" fill="#f8fafc"/>
+            </g>
+            <g transform="translate(355, 130)">
+              <circle cx="0" cy="0" r="16" fill="#3b82f6"/>
+              <text x="0" y="5" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">N</text>
+              <circle cx="-16" cy="14" r="9" fill="#f8fafc"/>
+              <circle cx="0" cy="20" r="9" fill="#f8fafc"/>
+              <circle cx="16" cy="14" r="9" fill="#f8fafc"/>
+            </g>
+            <rect x="80" y="175" width="240" height="30" rx="8" fill="#065f46" stroke="#10b981"/>
+            <text x="200" y="195" fill="#a7f3d0" font-size="13" font-weight="bold" font-family="monospace" text-anchor="middle">N₂ + 3H₂ ⇌ 2NH₃</text>
+          </svg>
+        `
+      },
+      {
+        id: "cell-osmosis",
+        title_vi: "Cấu tạo Tế bào & Sự Thẩm thấu",
+        title_en: "Cell Structure & Osmosis",
+        subject: "biology",
+        subject_vi: "Sinh học",
+        subject_en: "Biology",
+        grade: "high",
+        grade_label_vi: "THCS & THPT",
+        grade_label_en: "Middle & High School",
+        subjectIcon: "fa-solid fa-dna",
+        rating: 4.9,
+        reviews: "19.5k",
+        desc_vi: "Quan sát hiện tượng teo bào và trương bào khi thay đổi nồng độ dung dịch ưu trương, đẳng trương và nhược trương.",
+        desc_en: "Observe plasmolysis and deplasmolysis by manipulating hypertonic, isotonic, and hypotonic solution concentrations.",
+        hasLiveDemo: false,
+        svgVisual: `
+          <svg viewBox="0 0 400 220" class="w-full h-full object-cover">
+            <defs>
+              <linearGradient id="gradBio" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#022c22" />
+                <stop offset="100%" stop-color="#064e3b" />
+              </linearGradient>
+            </defs>
+            <rect width="400" height="220" fill="url(#gradBio)"/>
+            <rect x="90" y="35" width="220" height="150" rx="40" fill="#047857" stroke="#34d399" stroke-width="4" opacity="0.6"/>
+            <ellipse cx="200" cy="110" rx="75" ry="50" fill="#0284c7" stroke="#38bdf8" stroke-width="3" opacity="0.75"/>
+            <text x="200" y="115" fill="#e0f2fe" font-size="11" font-weight="bold" text-anchor="middle">Không bào (H₂O)</text>
+            <circle cx="145" cy="75" r="22" fill="#7c3aed" stroke="#a78bfa" stroke-width="2"/>
+            <circle cx="148" cy="72" r="8" fill="#5b21b6"/>
+            <text x="145" y="78" fill="#ede9fe" font-size="8" font-weight="bold" text-anchor="middle">Nhân</text>
+            <ellipse cx="270" cy="70" rx="14" ry="8" fill="#15803d" stroke="#4ade80" stroke-width="1.5" transform="rotate(25, 270, 70)"/>
+            <ellipse cx="265" cy="150" rx="14" ry="8" fill="#15803d" stroke="#4ade80" stroke-width="1.5" transform="rotate(-15, 265, 150)"/>
+            <ellipse cx="130" cy="150" rx="14" ry="8" fill="#15803d" stroke="#4ade80" stroke-width="1.5"/>
+            <path d="M 40 110 L 75 110" stroke="#38bdf8" stroke-width="3" stroke-dasharray="4,3"/>
+            <polygon points="75,106 85,110 75,114" fill="#38bdf8"/>
+            <text x="55" y="98" fill="#7dd3fc" font-size="9" font-weight="bold">H₂O vào</text>
+            <path d="M 330 110 L 365 110" stroke="#38bdf8" stroke-width="3" stroke-dasharray="4,3"/>
+            <polygon points="365,106 375,110 365,114" fill="#38bdf8"/>
+            <text x="330" y="98" fill="#7dd3fc" font-size="9" font-weight="bold">H₂O ra</text>
+          </svg>
+        `
+      },
+      {
+        id: "projectile-motion",
+        title_vi: "Chuyển động Ném xiên",
+        title_en: "Projectile Motion",
+        subject: "physics",
+        subject_vi: "Vật lý",
+        subject_en: "Physics",
+        grade: "high",
+        grade_label_vi: "THPT (Lớp 10)",
+        grade_label_en: "High School (Grade 10)",
+        subjectIcon: "fa-solid fa-atom",
+        rating: 4.9,
+        reviews: "41.2k",
+        desc_vi: "Bắn pháo đại bác với các góc bắn, vận tốc đầu và lực cản không khí khác nhau để kiểm chứng tầm xa và độ cao cực đại.",
+        desc_en: "Launch cannonballs at various angles, initial velocities, and air resistance to study range and maximum altitude.",
+        hasLiveDemo: false,
+        svgVisual: `
+          <svg viewBox="0 0 400 220" class="w-full h-full object-cover">
+            <defs>
+              <linearGradient id="gradProj" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0f172a" />
+                <stop offset="100%" stop-color="#1e293b" />
+              </linearGradient>
+            </defs>
+            <rect width="400" height="220" fill="url(#gradProj)"/>
+            <rect x="0" y="180" width="400" height="40" fill="#334155"/>
+            <line x1="0" y1="180" x2="400" y2="180" stroke="#475569" stroke-width="2"/>
+            <g transform="translate(50, 180) rotate(-35)">
+              <rect x="-10" y="-12" width="45" height="24" rx="4" fill="#64748b" stroke="#94a3b8" stroke-width="2"/>
+            </g>
+            <circle cx="50" cy="180" r="16" fill="#475569" stroke="#cbd5e1" stroke-width="2"/>
+            <path d="M 75 160 Q 200 30 325 180" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6,4"/>
+            <circle cx="200" cy="95" r="7" fill="#ef4444" stroke="#fca5a5" stroke-width="2"/>
+            <line x1="200" y1="95" x2="245" y2="95" stroke="#38bdf8" stroke-width="2.5"/>
+            <polygon points="245,91 253,95 245,99" fill="#38bdf8"/>
+            <text x="215" y="85" fill="#38bdf8" font-size="10" font-weight="bold" font-family="monospace">v_x</text>
+            <line x1="200" y1="95" x2="200" y2="125" stroke="#ef4444" stroke-width="2"/>
+            <polygon points="197,125 200,131 203,125" fill="#ef4444"/>
+            <text x="205" y="125" fill="#f87171" font-size="10" font-weight="bold" font-family="monospace">g</text>
+            <ellipse cx="325" cy="180" rx="16" ry="6" fill="#ef4444"/>
+            <ellipse cx="325" cy="180" rx="8" ry="3" fill="#ffffff"/>
+          </svg>
+        `
+      },
+      {
+        id: "greenhouse-effect",
+        title_vi: "Hiệu ứng Nhà kính & Khí hậu",
+        title_en: "The Greenhouse Effect",
+        subject: "earth",
+        subject_vi: "Vật lý địa cầu",
+        subject_en: "Earth Science",
+        grade: "middle",
+        grade_label_vi: "THCS & THPT",
+        grade_label_en: "Middle & High School",
+        subjectIcon: "fa-solid fa-earth-americas",
+        rating: 4.8,
+        reviews: "16.8k",
+        desc_vi: "Mô phỏng bức xạ Mặt trời và cách các phân tử khí nhà kính (CO₂, CH₄, H₂O) hấp thụ, phản xạ nhiệt làm Trái đất ấm lên.",
+        desc_en: "Simulate solar radiation and how greenhouse gases trap infrared thermal radiation to warm Earth's atmosphere.",
+        hasLiveDemo: false,
+        svgVisual: `
+          <svg viewBox="0 0 400 220" class="w-full h-full object-cover">
+            <defs>
+              <linearGradient id="gradAtm" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#0284c7" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#ea580c" stop-opacity="0.3"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="220" fill="#0f172a"/>
+            <path d="M 0 170 Q 200 150 400 170 L 400 220 L 0 220 Z" fill="#15803d"/>
+            <rect x="0" y="40" width="400" height="120" fill="url(#gradAtm)"/>
+            <circle cx="30" cy="20" r="30" fill="#fbbf24"/>
+            <line x1="45" y1="35" x2="160" y2="160" stroke="#fef08a" stroke-width="3"/>
+            <line x1="60" y1="20" x2="240" y2="160" stroke="#fef08a" stroke-width="3"/>
+            <path d="M 170 160 Q 185 110 210 135 Q 230 160 250 120" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4,3"/>
+            <path d="M 270 160 Q 285 100 310 125 Q 330 150 350 110" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4,3"/>
+            <g transform="translate(140, 70)">
+              <circle cx="0" cy="0" r="5" fill="#64748b"/>
+              <circle cx="-7" cy="0" r="4" fill="#ef4444"/>
+              <circle cx="7" cy="0" r="4" fill="#ef4444"/>
+              <text x="0" y="14" fill="#94a3b8" font-size="7" font-weight="bold" text-anchor="middle">CO₂</text>
+            </g>
+            <g transform="translate(260, 85)">
+              <circle cx="0" cy="0" r="5" fill="#64748b"/>
+              <circle cx="-7" cy="0" r="4" fill="#ef4444"/>
+              <circle cx="7" cy="0" r="4" fill="#ef4444"/>
+              <text x="0" y="14" fill="#94a3b8" font-size="7" font-weight="bold" text-anchor="middle">CO₂</text>
+            </g>
+          </svg>
+        `
+      },
+      {
+        id: "function-graph",
+        title_vi: "Đồ thị Hàm số & Đạo hàm",
+        title_en: "Function Graphs & Derivatives",
+        subject: "math",
+        subject_vi: "Toán học",
+        subject_en: "Mathematics",
+        grade: "high",
+        grade_label_vi: "THPT & Đại học",
+        grade_label_en: "High School & College",
+        subjectIcon: "fa-solid fa-square-root-variable",
+        rating: 4.9,
+        reviews: "22.3k",
+        desc_vi: "Thay đổi hệ số a, b, c của parabol y = ax² + bx + c để quan sát trục đối xứng, đỉnh parabol và hệ số góc tiếp tuyến.",
+        desc_en: "Manipulate coefficients of polynomial and trigonometric functions while tracking tangents and slope derivatives.",
+        hasLiveDemo: false,
+        svgVisual: `
+          <svg viewBox="0 0 400 220" class="w-full h-full object-cover">
+            <rect width="400" height="220" fill="#090d16"/>
+            <line x1="40" y1="110" x2="360" y2="110" stroke="#334155" stroke-width="2"/>
+            <line x1="200" y1="20" x2="200" y2="200" stroke="#334155" stroke-width="2"/>
+            <polygon points="360,107 367,110 360,113" fill="#64748b"/>
+            <polygon points="197,20 200,13 203,20" fill="#64748b"/>
+            <text x="355" y="125" fill="#94a3b8" font-size="11" font-family="monospace">x</text>
+            <text x="210" y="25" fill="#94a3b8" font-size="11" font-family="monospace">y</text>
+            <line x1="120" y1="20" x2="120" y2="200" stroke="#1e293b" stroke-width="1" stroke-dasharray="2,2"/>
+            <line x1="280" y1="20" x2="280" y2="200" stroke="#1e293b" stroke-width="1" stroke-dasharray="2,2"/>
+            <line x1="40" y1="60" x2="360" y2="60" stroke="#1e293b" stroke-width="1" stroke-dasharray="2,2"/>
+            <line x1="40" y1="160" x2="360" y2="160" stroke="#1e293b" stroke-width="1" stroke-dasharray="2,2"/>
+            <path d="M 80 40 Q 200 190 320 40" fill="none" stroke="#a855f7" stroke-width="3.5"/>
+            <line x1="210" y1="175" x2="310" y2="75" stroke="#38bdf8" stroke-width="2"/>
+            <circle cx="260" cy="125" r="5" fill="#38bdf8"/>
+            <rect x="235" y="30" width="130" height="28" rx="6" fill="#1e1b4b" stroke="#6b21a8"/>
+            <text x="300" y="49" fill="#e9d5ff" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">y = 0.5x² - 2x + 1</text>
+          </svg>
+        `
+      },
+      {
+        id: "light-refraction",
+        title_vi: "Khúc xạ Ánh sáng & Định luật Snell",
+        title_en: "Bending Light & Snell's Law",
+        subject: "physics",
+        subject_vi: "Vật lý",
+        subject_en: "Physics",
+        grade: "high",
+        grade_label_vi: "THCS & THPT",
+        grade_label_en: "Middle & High School",
+        subjectIcon: "fa-solid fa-atom",
+        rating: 4.9,
+        reviews: "35.7k",
+        desc_vi: "Quan sát tia sáng bị bẻ cong khi truyền qua các môi trường khác nhau: không khí, nước, thủy tinh và hiện tượng phản xạ toàn phần.",
+        desc_en: "Explore light bending between media (air, water, glass) and observe critical angle & total internal reflection.",
+        hasLiveDemo: false,
+        svgVisual: `
+          <svg viewBox="0 0 400 220" class="w-full h-full object-cover">
+            <rect width="400" height="110" fill="#0f172a"/>
+            <rect y="110" width="400" height="110" fill="#0c4a6e"/>
+            <line x1="0" y1="110" x2="400" y2="110" stroke="#38bdf8" stroke-width="2"/>
+            <line x1="200" y1="30" x2="200" y2="190" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4"/>
+            <line x1="70" y1="30" x2="200" y2="110" stroke="#ef4444" stroke-width="3"/>
+            <line x1="200" y1="110" x2="330" y2="30" stroke="#ef4444" stroke-width="2" opacity="0.6"/>
+            <line x1="200" y1="110" x2="265" y2="190" stroke="#ef4444" stroke-width="3"/>
+            <text x="30" y="60" fill="#cbd5e1" font-size="12" font-weight="bold">Không khí (n₁ = 1.00)</text>
+            <text x="30" y="150" fill="#7dd3fc" font-size="12" font-weight="bold">Nước (n₂ = 1.33)</text>
+            <path d="M 200 140 A 30 30 0 0 0 218 132" fill="none" stroke="#f59e0b" stroke-width="2"/>
+            <text x="215" y="150" fill="#f59e0b" font-size="11" font-weight="bold">r</text>
+          </svg>
+        `
+      },
+      {
+        id: "water-molecules",
+        title_vi: "Cấu tạo Phân tử & Liên kết Hiđrô",
+        title_en: "Molecule Polarity & Hydrogen Bonds",
+        subject: "chemistry",
+        subject_vi: "Hóa học",
+        subject_en: "Chemistry",
+        grade: "high",
+        grade_label_vi: "THPT (Lớp 10-11)",
+        grade_label_en: "High School",
+        subjectIcon: "fa-solid fa-flask",
+        rating: 4.7,
+        reviews: "14.2k",
+        desc_vi: "Khám phá độ âm điện, tính phân cực của phân tử nước H₂O và mạng lưới liên kết hydro tạo nên sức căng bề mặt.",
+        desc_en: "Investigate electronegativity, polarity of H2O molecules, and dynamic hydrogen bond lattices.",
+        hasLiveDemo: false,
+        svgVisual: `
+          <svg viewBox="0 0 400 220" class="w-full h-full object-cover">
+            <rect width="400" height="220" fill="#042f2e"/>
+            <g transform="translate(180, 100)">
+              <circle cx="0" cy="0" r="24" fill="#dc2626" stroke="#f87171" stroke-width="2"/>
+              <text x="0" y="6" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">O δ⁻</text>
+              <line x1="-15" y1="-15" x2="-35" y2="-28" stroke="#cbd5e1" stroke-width="4"/>
+              <circle cx="-35" cy="-28" r="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+              <text x="-35" y="-23" fill="#0f172a" font-size="10" font-weight="bold" text-anchor="middle">H⁺</text>
+              <line x1="15" y1="-15" x2="35" y2="-28" stroke="#cbd5e1" stroke-width="4"/>
+              <circle cx="35" cy="-28" r="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+              <text x="35" y="-23" fill="#0f172a" font-size="10" font-weight="bold" text-anchor="middle">H⁺</text>
+            </g>
+            <g transform="translate(300, 140)">
+              <circle cx="0" cy="0" r="20" fill="#dc2626"/>
+              <text x="0" y="5" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">O</text>
+              <circle cx="-25" cy="18" r="12" fill="#f8fafc"/>
+              <circle cx="20" cy="22" r="12" fill="#f8fafc"/>
+            </g>
+            <line x1="215" y1="72" x2="300" y2="140" stroke="#38bdf8" stroke-width="3" stroke-dasharray="5,4"/>
+            <text x="270" y="95" fill="#7dd3fc" font-size="10" font-weight="bold">Liên kết Hydro</text>
+          </svg>
+        `
+      },
+      {
+        id: "pendulum-energy",
+        title_vi: "Con lắc Đơn & Năng lượng",
+        title_en: "Pendulum Lab & Energy Conservation",
+        subject: "physics",
+        subject_vi: "Vật lý",
+        subject_en: "Physics",
+        grade: "high",
+        grade_label_vi: "THCS & THPT",
+        grade_label_en: "Middle & High School",
+        subjectIcon: "fa-solid fa-atom",
+        rating: 4.9,
+        reviews: "38.9k",
+        desc_vi: "Nghiên cứu chu kỳ dao động điều hòa của con lắc đơn phụ thuộc chiều dài l, gia tốc g và bảo toàn động năng - thế năng.",
+        desc_en: "Study harmonic motion period dependence on string length, gravity, and the conservation of kinetic and potential energy.",
+        hasLiveDemo: true,
+        svgVisual: `
+          <svg viewBox="0 0 400 220" class="w-full h-full object-cover">
+            <rect width="400" height="220" fill="#0f172a"/>
+            <rect x="140" y="20" width="120" height="10" rx="3" fill="#64748b"/>
+            <circle cx="200" cy="25" r="4" fill="#cbd5e1"/>
+            <line x1="200" y1="25" x2="280" y2="140" stroke="#cbd5e1" stroke-width="2.5"/>
+            <line x1="200" y1="25" x2="200" y2="160" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,4"/>
+            <circle cx="280" cy="140" r="16" fill="#f59e0b" stroke="#fef3c7" stroke-width="2"/>
+            <rect x="40" y="60" width="60" height="110" rx="6" fill="#1e293b" stroke="#334155"/>
+            <rect x="48" y="110" width="18" height="50" fill="#10b981"/>
+            <rect x="72" y="80" width="18" height="80" fill="#3b82f6"/>
+            <text x="57" y="168" fill="#a7f3d0" font-size="8" font-weight="bold" text-anchor="middle">Wđ</text>
+            <text x="81" y="168" fill="#93c5fd" font-size="8" font-weight="bold" text-anchor="middle">Wt</text>
+            <text x="70" y="52" fill="#cbd5e1" font-size="9" font-weight="bold" text-anchor="middle">Năng lượng</text>
+          </svg>
+        `
+      }
+    ];
+
+    // 2. OHM'S LAW SIMULATION ENGINE
+    let ohmSim = {
+      canvas: null,
+      ctx: null,
+      voltage: 4.5,
+      resistance: 500,
+      current: 0.009,
+      power: 0.0405,
+      isSwitchClosed: true,
+      showElectrons: true,
+      showResistorBands: true,
+      soundEnabled: true,
+      audioCtx: null,
+      electrons: [],
+      animFrameId: null,
+      lastTime: 0,
+      circuitRect: null
+    };
+
+    function initOhmSimulation() {
+      ohmSim.canvas = document.getElementById('ohmSimCanvas');
+      if (!ohmSim.canvas) return;
+      ohmSim.ctx = ohmSim.canvas.getContext('2d');
+
+      resizeOhmCanvas();
+      window.addEventListener('resize', resizeOhmCanvas);
+      createElectrons(40);
+
+      const vSlider = document.getElementById('voltageSlider');
+      const rSlider = document.getElementById('resistanceSlider');
+
+      if (vSlider) {
+        vSlider.addEventListener('input', (e) => {
+          ohmSim.voltage = parseFloat(e.target.value);
+          updateOhmCalculations();
+          playToneForCurrent();
+        });
+      }
+
+      if (rSlider) {
+        rSlider.addEventListener('input', (e) => {
+          ohmSim.resistance = parseFloat(e.target.value);
+          updateOhmCalculations();
+          playToneForCurrent();
+        });
+      }
+
+      updateOhmCalculations();
+
+      if (ohmSim.animFrameId) cancelAnimationFrame(ohmSim.animFrameId);
+      ohmSim.lastTime = performance.now();
+      ohmSim.animFrameId = requestAnimationFrame(renderOhmLoop);
+    }
+
+    function resizeOhmCanvas() {
+      if (!ohmSim.canvas) return;
+      const rect = ohmSim.canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      ohmSim.canvas.width = Math.max(1, rect.width * dpr);
+      ohmSim.canvas.height = Math.max(1, rect.height * dpr);
+      ohmSim.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      computeCircuitPath(rect.width, rect.height);
+    }
+
+    function computeCircuitPath(w, h) {
+      const padX = Math.min(60, w * 0.12);
+      const padY = Math.min(50, h * 0.15);
+      const left = padX;
+      const right = Math.max(left + 40, w - padX);
+      const top = padY;
+      const bottom = Math.max(top + 40, h - padY);
+      ohmSim.circuitRect = { left, top, right, bottom, width: right - left, height: bottom - top };
+    }
+
+    function createElectrons(count) {
+      ohmSim.electrons = [];
+      for (let i = 0; i < count; i++) {
+        ohmSim.electrons.push({ distance: i / count, size: 4.5 });
+      }
+    }
+
+    function getCircuitCoordinate(dist) {
+      const { left, top, right, bottom, width, height } = ohmSim.circuitRect;
+      const perimeter = 2 * (width + height);
+      let d = (((dist % 1) + 1) % 1) * perimeter;
+
+      if (d <= width) return { x: left + d, y: top };
+      d -= width;
+      if (d <= height) return { x: right, y: top + d };
+      d -= height;
+      if (d <= width) return { x: right - d, y: bottom };
+      d -= width;
+      return { x: left, y: bottom - d };
+    }
+
+    function updateOhmCalculations() {
+      if (ohmSim.isSwitchClosed) {
+        ohmSim.current = ohmSim.voltage / ohmSim.resistance;
+        ohmSim.power = ohmSim.voltage * ohmSim.current;
+      } else {
+        ohmSim.current = 0;
+        ohmSim.power = 0;
+      }
+
+      const current_mA = ohmSim.current * 1000;
+      const power_mW = ohmSim.power * 1000;
+
+      const vDisp = document.getElementById('voltageDisplay');
+      const rDisp = document.getElementById('resistanceDisplay');
+      const iDisp = document.getElementById('currentDigitalVal');
+      const iAmpDisp = document.getElementById('currentAmpVal');
+      const pDisp = document.getElementById('powerDigitalVal');
+      const bulbState = document.getElementById('bulbState');
+
+      if (vDisp) vDisp.textContent = `${ohmSim.voltage.toFixed(1)} V`;
+      if (rDisp) rDisp.textContent = `${Math.round(ohmSim.resistance)} Ω`;
+      if (iDisp) iDisp.textContent = `${current_mA.toFixed(2)} mA`;
+      if (iAmpDisp) iAmpDisp.textContent = `(${ohmSim.current.toFixed(4)} A)`;
+      if (pDisp) {
+        pDisp.textContent = power_mW >= 1000
+          ? `${ohmSim.power.toFixed(2)} W`
+          : `${power_mW.toFixed(1)} mW`;
+      }
+
+      if (bulbState) {
+        if (!ohmSim.isSwitchClosed || ohmSim.current === 0) bulbState.textContent = 'Mạch ngắt (Tắt)';
+        else if (power_mW < 5) bulbState.textContent = 'Sáng mờ nhạt';
+        else if (power_mW < 50) bulbState.textContent = 'Sáng vừa chuẩn';
+        else bulbState.textContent = 'Sáng rực rỡ';
+      }
+
+      updatePhETFormulaDisplay(current_mA);
+    }
+
+    function updatePhETFormulaDisplay(current_mA) {
+      const elI = document.getElementById('formulaI');
+      const elU = document.getElementById('formulaU');
+      const elR = document.getElementById('formulaR');
+      const elIVal = document.getElementById('formulaIVal');
+      const elUVal = document.getElementById('formulaUVal');
+      const elRVal = document.getElementById('formulaRVal');
+      const powerVal = document.getElementById('powerVal');
+
+      if (elI && elU && elR) {
+        const uSize = Math.max(16, Math.min(46, 16 + (ohmSim.voltage / 12) * 30));
+        elU.style.fontSize = `${uSize.toFixed(0)}px`;
+
+        const rSize = Math.max(16, Math.min(46, 16 + (ohmSim.resistance / 1000) * 30));
+        elR.style.fontSize = `${rSize.toFixed(0)}px`;
+
+        const iSize = Math.max(16, Math.min(54, 16 + Math.log10(Math.max(0.1, current_mA) + 1) * 16));
+        elI.style.fontSize = `${iSize.toFixed(0)}px`;
+
+        if (elIVal) elIVal.textContent = `${current_mA.toFixed(1)} mA`;
+        if (elUVal) elUVal.textContent = `${ohmSim.voltage.toFixed(1)} V`;
+        if (elRVal) elRVal.textContent = `${Math.round(ohmSim.resistance)} Ω`;
+        if (powerVal) {
+          const p_mW = ohmSim.power * 1000;
+          powerVal.textContent = p_mW >= 1000
+            ? `P = ${ohmSim.power.toFixed(2)} W`
+            : `P = ${p_mW.toFixed(1)} mW`;
+        }
+      }
+    }
+
+    function renderOhmLoop(now) {
+      const dt = Math.min((now - ohmSim.lastTime) / 1000, 0.1);
+      ohmSim.lastTime = now;
+
+      if (ohmSim.canvas && ohmSim.ctx) {
+        const w = ohmSim.canvas.getBoundingClientRect().width;
+        const h = ohmSim.canvas.getBoundingClientRect().height;
+        drawOhmCircuit(w, h, dt);
+      }
+
+      ohmSim.animFrameId = requestAnimationFrame(renderOhmLoop);
+    }
+
+    function drawOhmCircuit(w, h, dt) {
+      const ctx = ohmSim.ctx;
+      ctx.clearRect(0, 0, w, h);
+
+      if (!ohmSim.circuitRect) computeCircuitPath(w, h);
+      const { left, top, right, bottom } = ohmSim.circuitRect;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = '#1e3a8a';
+      ctx.lineWidth = 10;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.rect(left, top, right - left, bottom - top);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 4;
+      ctx.rect(left, top, right - left, bottom - top);
+      ctx.stroke();
+      ctx.restore();
+
+      if (ohmSim.showElectrons && ohmSim.isSwitchClosed && ohmSim.current > 0) {
+        const speed = Math.min(0.5, Math.max(0.01, (ohmSim.current * 1000) * 0.0035));
+        ctx.save();
+        ohmSim.electrons.forEach(e => {
+          e.distance = (e.distance - speed * dt + 1) % 1;
+          const pos = getCircuitCoordinate(e.distance);
+
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, e.size, 0, Math.PI * 2);
+          ctx.fillStyle = '#60a5fa';
+          ctx.shadowColor = '#93c5fd';
+          ctx.shadowBlur = 8;
+          ctx.fill();
+
+          ctx.fillStyle = '#1e3a8a';
+          ctx.fillRect(pos.x - 2, pos.y - 0.75, 4, 1.5);
+        });
+        ctx.restore();
+      }
+
+      drawBatteryPack(ctx, left, (top + bottom) / 2, ohmSim.voltage);
+      drawResistorComponent(ctx, (left + right) / 2, bottom, ohmSim.resistance);
+      drawLightBulb(ctx, right, (top + bottom) / 2, ohmSim.power, ohmSim.isSwitchClosed);
+      drawCircuitSwitch(ctx, (left + right) / 2, top, ohmSim.isSwitchClosed);
+
+      if (ohmSim.isSwitchClosed && ohmSim.current > 0) {
+        drawCurrentDirectionArrows(ctx, left, right, top, bottom);
+      }
+    }
+
+    function drawBatteryPack(ctx, x, y, voltage) {
+      ctx.save();
+      ctx.translate(x, y);
+      const numCells = Math.max(1, Math.min(4, Math.ceil(voltage / 3)));
+      const cellH = 26;
+      const startY = -(numCells * cellH) / 2;
+
+      for (let i = 0; i < numCells; i++) {
+        const cy = startY + i * cellH;
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(-14, cy + 2, 28, cellH - 4, 3);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(-14, cy + 8, 28, 6);
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(-5, cy, 10, 3);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('+', 0, cy + 8);
+        ctx.fillText('-', 0, cy + cellH - 4);
+      }
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 12px "JetBrains Mono", monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${voltage.toFixed(1)}V`, -20, 4);
+      ctx.restore();
+    }
+
+    function drawResistorComponent(ctx, x, y, ohms) {
+      ctx.save();
+      ctx.translate(x, y);
+      const resW = 75;
+      const resH = 24;
+
+      ctx.fillStyle = '#f5f5f4';
+      ctx.strokeStyle = '#78716c';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(-resW / 2, -resH / 2, resW, resH, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      if (ohmSim.showResistorBands) {
+        const bands = getResistorColorBands(ohms);
+        const bandWidth = 5;
+        const bandPositions = [-22, -8, 6, 22];
+        bands.forEach((color, idx) => {
+          ctx.fillStyle = color;
+          ctx.fillRect(bandPositions[idx], -resH / 2, bandWidth, resH);
+        });
+      }
+
+      ctx.fillStyle = '#f43f5e';
+      ctx.font = 'bold 12px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${Math.round(ohms)} Ω`, 0, resH / 2 + 16);
+      ctx.restore();
+    }
+
+    function getResistorColorBands(val) {
+      const colorMap = ['#000000', '#78350f', '#dc2626', '#ea580c', '#eab308', '#16a34a', '#2563eb', '#9333ea', '#6b7280', '#ffffff'];
+      const valStr = Math.round(val).toString();
+      const digit1 = parseInt(valStr[0], 10) || 1;
+      const digit2 = parseInt(valStr[1], 10) || 0;
+      const multiplier = Math.max(0, valStr.length - 2);
+      return [colorMap[digit1], colorMap[digit2], colorMap[multiplier] || '#eab308', '#d97706'];
+    }
+
+    function drawLightBulb(ctx, x, y, powerWatts, isClosed) {
+      ctx.save();
+      ctx.translate(x, y);
+      const bulbRadius = 18;
+      const brightness = (!isClosed || powerWatts <= 0) ? 0 : Math.min(1, powerWatts / 0.5);
+
+      if (brightness > 0.05) {
+        const glowRadius = bulbRadius + brightness * 45;
+        const grad = ctx.createRadialGradient(0, 0, bulbRadius * 0.5, 0, 0, glowRadius);
+        grad.addColorStop(0, `rgba(254, 240, 138, ${0.85 * brightness})`);
+        grad.addColorStop(0.4, `rgba(245, 158, 11, ${0.45 * brightness})`);
+        grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, 0, glowRadius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.arc(0, 0, bulbRadius, 0, Math.PI * 2);
+      if (brightness > 0.05) {
+        ctx.fillStyle = `rgba(254, 240, 138, ${0.6 + brightness * 0.4})`;
+        ctx.strokeStyle = '#fbbf24';
+      } else {
+        ctx.fillStyle = '#334155';
+        ctx.strokeStyle = '#475569';
+      }
+      ctx.lineWidth = 2;
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(-6, 4);
+      ctx.lineTo(-4, -6);
+      ctx.lineTo(0, -9);
+      ctx.lineTo(4, -6);
+      ctx.lineTo(6, 4);
+      ctx.strokeStyle = brightness > 0.1 ? '#ffffff' : '#64748b';
+      ctx.lineWidth = brightness > 0.2 ? 2.5 : 1.5;
+      ctx.stroke();
+
+      ctx.fillStyle = '#64748b';
+      ctx.fillRect(-7, bulbRadius - 2, 14, 8);
+
+      ctx.fillStyle = '#10b981';
+      ctx.font = 'bold 11px "JetBrains Mono", monospace';
+      ctx.textAlign = 'left';
+      const p_mW = powerWatts * 1000;
+      const pStr = p_mW >= 1000 ? `${powerWatts.toFixed(2)}W` : `${p_mW.toFixed(1)}mW`;
+      ctx.fillText(pStr, 28, 4);
+      ctx.restore();
+    }
+
+    function drawCircuitSwitch(ctx, x, y, isClosed) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+      ctx.arc(-22, 0, 4.5, 0, Math.PI * 2);
+      ctx.arc(22, 0, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      if (isClosed) {
+        ctx.moveTo(-22, 0);
+        ctx.lineTo(22, 0);
+      } else {
+        ctx.moveTo(-22, 0);
+        ctx.lineTo(16, -18);
+      }
+      ctx.stroke();
+
+      ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = isClosed ? '#34d399' : '#f87171';
+      ctx.fillText(isClosed ? 'ĐÓNG (ON)' : 'NGẮT (OFF)', 0, -12);
+      ctx.restore();
+    }
+
+    function drawCurrentDirectionArrows(ctx, left, right, top, bottom) {
+      ctx.save();
+      ctx.fillStyle = '#fbbf24';
+      const arrowSize = 6;
+      drawArrowHead(ctx, (left + right) / 2 + 65, top, 0, arrowSize);
+      drawArrowHead(ctx, right, (top + bottom) / 2 + 55, Math.PI / 2, arrowSize);
+      drawArrowHead(ctx, (left + right) / 2 - 65, bottom, Math.PI, arrowSize);
+      drawArrowHead(ctx, left, (top + bottom) / 2 - 55, -Math.PI / 2, arrowSize);
+      ctx.restore();
+    }
+
+    function drawArrowHead(ctx, x, y, angle, size) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.moveTo(size, 0);
+      ctx.lineTo(-size, -size * 0.7);
+      ctx.lineTo(-size, size * 0.7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function adjustVoltage(delta) {
+      const slider = document.getElementById('voltageSlider');
+      if (!slider) return;
+      const val = Math.max(0.1, Math.min(12.0, parseFloat(slider.value) + delta));
+      slider.value = val;
+      ohmSim.voltage = val;
+      updateOhmCalculations();
+      playToneForCurrent();
+    }
+
+    function adjustResistance(delta) {
+      const slider = document.getElementById('resistanceSlider');
+      if (!slider) return;
+      const val = Math.max(20, Math.min(1000, parseFloat(slider.value) + delta));
+      slider.value = val;
+      ohmSim.resistance = val;
+      updateOhmCalculations();
+      playToneForCurrent();
+    }
+
+    function toggleCircuitSwitch() {
+      ohmSim.isSwitchClosed = !ohmSim.isSwitchClosed;
+      const btn = document.getElementById('circuitSwitchBtn');
+      const label = document.getElementById('circuitSwitchLabel');
+      const icon = document.getElementById('circuitSwitchIcon');
+
+      if (ohmSim.isSwitchClosed) {
+        if (btn) btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white';
+        if (label) label.textContent = 'Đóng mạch (ON)';
+        if (icon) icon.className = 'fa-solid fa-toggle-on text-base';
+        showToast('Đã đóng mạch điện. Dòng điện bắt đầu chạy.');
+      } else {
+        if (btn) btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-rose-600 hover:bg-rose-500 text-white';
+        if (label) label.textContent = 'Ngắt mạch (OFF)';
+        if (icon) icon.className = 'fa-solid fa-toggle-off text-base';
+        showToast('Đã ngắt mạch điện. Cường độ dòng điện I = 0.');
+      }
+      updateOhmCalculations();
+      playToneForCurrent();
+    }
+
+    function toggleCurrentFlowMode() {
+      const chk = document.getElementById('showCurrentFlowCheck');
+      ohmSim.showElectrons = chk ? chk.checked : true;
+    }
+
+    function toggleResistorColorCodes() {
+      const chk = document.getElementById('showResistanceColorCheck');
+      ohmSim.showResistorBands = chk ? chk.checked : true;
+    }
+
+    function resetOhmSim() {
+      ohmSim.voltage = 4.5;
+      ohmSim.resistance = 500;
+      ohmSim.isSwitchClosed = true;
+
+      const vSlider = document.getElementById('voltageSlider');
+      const rSlider = document.getElementById('resistanceSlider');
+      if (vSlider) vSlider.value = 4.5;
+      if (rSlider) rSlider.value = 500;
+
+      const btn = document.getElementById('circuitSwitchBtn');
+      const label = document.getElementById('circuitSwitchLabel');
+      const icon = document.getElementById('circuitSwitchIcon');
+      if (btn) btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white';
+      if (label) label.textContent = 'Đóng mạch (ON)';
+      if (icon) icon.className = 'fa-solid fa-toggle-on text-base';
+
+      updateOhmCalculations();
+      showToast('Đã khôi phục thông số thí nghiệm về mặc định.');
+    }
+
+    function toggleSound() {
+      ohmSim.soundEnabled = !ohmSim.soundEnabled;
+      const icon = document.getElementById('soundIcon');
+      const label = document.getElementById('soundLabel');
+      if (ohmSim.soundEnabled) {
+        if (icon) icon.className = 'fa-solid fa-volume-high text-amber-400';
+        if (label) label.textContent = 'Âm thanh';
+        showToast('Đã bật âm thanh mô phỏng.');
+        playToneForCurrent();
+      } else {
+        if (icon) icon.className = 'fa-solid fa-volume-xmark text-slate-400';
+        if (label) label.textContent = 'Tắt âm';
+        showToast('Đã tắt âm thanh mô phỏng.');
+      }
+    }
+
+    function playToneForCurrent() {
+      if (!ohmSim.soundEnabled) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        if (!ohmSim.audioCtx) ohmSim.audioCtx = new AudioContext();
+        if (ohmSim.audioCtx.state === 'suspended') ohmSim.audioCtx.resume();
+        if (!ohmSim.isSwitchClosed || ohmSim.current <= 0) return;
+
+        const freq = 200 + Math.min(800, (ohmSim.current * 1000) * 12);
+        const osc = ohmSim.audioCtx.createOscillator();
+        const gain = ohmSim.audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ohmSim.audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.04, ohmSim.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ohmSim.audioCtx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(ohmSim.audioCtx.destination);
+        osc.start();
+        osc.stop(ohmSim.audioCtx.currentTime + 0.15);
+      } catch (_err) {
+        // Ignored when browser blocks audio before gesture
+      }
+    }
+
+    function toggleLabFullscreen() {
+      const elem = document.getElementById('interactive-demo');
+      if (!elem) return;
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(() => {
+          showToast('Trình duyệt không hỗ trợ chế độ toàn màn hình cho khung này.');
+        });
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // 3. PENDULUM & HERO CANVAS SIMULATION
+    let pendulumSim = {
+      canvas: null,
+      ctx: null,
+      length: 1.5,
+      mass: 1.0,
+      gravity: 9.8,
+      damping: 0.001,
+      angle: Math.PI / 4,
+      angularVelocity: 0,
+      angularAcceleration: 0,
+      originX: 0,
+      originY: 50,
+      isPaused: false,
+      animId: null
+    };
+
+    function initHeroCanvas() {
+      const canvas = document.getElementById('heroCircuitCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      function resizeHero() {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.max(1, rect.width * dpr);
+        canvas.height = Math.max(1, rect.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      resizeHero();
+      window.addEventListener('resize', resizeHero);
+
+      let angle = 0;
+      let energyBoost = 1.0;
+
+      canvas.addEventListener('mousemove', () => {
+        energyBoost = 1.85;
+      });
+      canvas.addEventListener('mouseleave', () => {
+        energyBoost = 1.0;
+      });
+      canvas.addEventListener('touchstart', () => {
+        energyBoost = energyBoost > 1.2 ? 1.0 : 1.85;
+      }, { passive: true });
+
+      function renderHero() {
+        const w = canvas.getBoundingClientRect().width;
+        const h = canvas.getBoundingClientRect().height;
+        ctx.clearRect(0, 0, w, h);
+
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.strokeStyle = 'rgba(30, 58, 138, 0.2)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < w; x += 30) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+          ctx.stroke();
+        }
+        for (let y = 0; y < h; y += 30) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
+        }
+
+        const cx = w / 2;
+        const cy = h / 2;
+        angle += 0.018 * energyBoost;
+
+        const orbits = [
+          { rx: Math.min(110, w * 0.28), ry: Math.min(40, h * 0.14), rot: Math.PI / 4, color: '#38bdf8', speed: 1.2 },
+          { rx: Math.min(110, w * 0.28), ry: Math.min(40, h * 0.14), rot: -Math.PI / 4, color: '#2dd4bf', speed: 1.6 },
+          { rx: Math.min(110, w * 0.28), ry: Math.min(40, h * 0.14), rot: 0, color: '#f59e0b', speed: 1.0 }
+        ];
+
+        orbits.forEach((orb) => {
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate(orb.rot);
+
+          ctx.beginPath();
+          ctx.ellipse(0, 0, orb.rx, orb.ry, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = orb.color;
+          ctx.lineWidth = 1.5;
+          ctx.globalAlpha = 0.55;
+          ctx.stroke();
+
+          const theta = angle * orb.speed;
+          const ex = Math.cos(theta) * orb.rx;
+          const ey = Math.sin(theta) * orb.ry;
+
+          ctx.beginPath();
+          ctx.arc(ex, ey, 5, 0, Math.PI * 2);
+          ctx.fillStyle = orb.color;
+          ctx.shadowColor = orb.color;
+          ctx.shadowBlur = 12;
+          ctx.globalAlpha = 1.0;
+          ctx.fill();
+
+          ctx.restore();
+        });
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        const grad = ctx.createRadialGradient(0, 0, 4, 0, 0, 24);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.3, '#f59e0b');
+        grad.addColorStop(0.8, '#dc2626');
+        grad.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, 0, 22, 0, Math.PI * 2);
+        ctx.fill();
+
+        const p1x = Math.sin(angle * 2) * 4;
+        const p1y = Math.cos(angle * 2) * 4;
+        ctx.beginPath();
+        ctx.arc(p1x, p1y, 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(-p1x, -p1y, 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#3b82f6';
+        ctx.fill();
+        ctx.restore();
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(13, 148, 136, 0.7)';
+        ctx.lineWidth = 2.5;
+        for (let x = 0; x < w; x += 4) {
+          const y = h - 35 + Math.sin(x * 0.04 + angle * 3) * (10 * energyBoost);
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        requestAnimationFrame(renderHero);
+      }
+
+      requestAnimationFrame(renderHero);
+    }
+
+    function openPendulumSimModal() {
+      const container = document.getElementById('modalSimContainer');
+      if (!container) return;
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
+          <div class="lg:col-span-8 bg-slate-950 rounded-2xl relative overflow-hidden min-h-[380px] flex items-center justify-center border border-slate-800">
+            <canvas id="modalPendulumCanvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+
+            <div class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-slate-700 text-xs text-slate-200 space-y-1.5">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span>
+                <span>Động năng (Wđ): <strong id="pendKinetic" class="text-emerald-400">0.00 J</strong></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded bg-blue-500 inline-block"></span>
+                <span>Thế năng (Wt): <strong id="pendPotential" class="text-blue-400">0.00 J</strong></span>
+              </div>
+              <div class="flex items-center gap-2 border-t border-slate-700 pt-1">
+                <span class="w-3 h-3 rounded bg-amber-500 inline-block"></span>
+                <span>Cơ năng toàn phần (W): <strong id="pendTotal" class="text-amber-400">0.00 J</strong></span>
+              </div>
+            </div>
+
+            <div class="absolute bottom-3 inset-x-4 bg-slate-900/80 text-center py-1.5 rounded-lg text-slate-400 text-xs pointer-events-none">
+              <i class="fa-solid fa-hand-pointer text-amber-400 mr-1"></i>
+              Dùng chuột hoặc ngón tay kéo quả nặng lệch góc rồi buông tay để bắt đầu dao động!
+            </div>
+          </div>
+
+          <div class="lg:col-span-4 space-y-4">
+            <h4 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+              <i class="fa-solid fa-sliders text-brand-blue"></i>
+              <span>Thông số con lắc đơn</span>
+            </h4>
+
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+              <div class="flex justify-between text-xs font-bold text-slate-800">
+                <span>Chiều dài dây (l)</span>
+                <span id="pendLenDisp" class="text-brand-blue font-mono font-bold">1.50 m</span>
+              </div>
+              <input type="range" id="pendLenSlider" min="0.5" max="2.5" step="0.05" value="1.5" class="w-full accent-brand-blue" oninput="updatePendulumParams()" />
+            </div>
+
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+              <div class="flex justify-between text-xs font-bold text-slate-800">
+                <span>Khối lượng quả cầu (m)</span>
+                <span id="pendMassDisp" class="text-rose-600 font-mono font-bold">1.00 kg</span>
+              </div>
+              <input type="range" id="pendMassSlider" min="0.1" max="3.0" step="0.1" value="1.0" class="w-full accent-rose-600" oninput="updatePendulumParams()" />
+            </div>
+
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+              <div class="flex justify-between text-xs font-bold text-slate-800">
+                <span>Gia tốc trọng trường (g)</span>
+                <span id="pendGDisp" class="text-amber-600 font-mono font-bold">Trái đất (9.8 m/s²)</span>
+              </div>
+              <select id="pendGSelect" onchange="updatePendulumParams()" class="w-full bg-white border border-slate-200 text-xs font-semibold rounded-lg p-2 outline-none">
+                <option value="9.8">Trái Đất (g = 9.8 m/s²)</option>
+                <option value="1.62">Mặt Trăng (g = 1.62 m/s²)</option>
+                <option value="24.79">Sao Mộc (g = 24.79 m/s²)</option>
+                <option value="0">Không trọng lực (g = 0)</option>
+              </select>
+            </div>
+
+            <div class="bg-blue-50 p-3.5 rounded-xl border border-blue-200 text-xs">
+              <span class="font-bold text-brand-blue block mb-1">Chu kỳ dao động lý thuyết:</span>
+              <span class="font-mono text-base font-extrabold text-slate-900" id="pendPeriodVal">T ≈ 2.46 s</span>
+              <span class="text-[11px] text-slate-500 block mt-0.5 font-mono">T = 2π√(l / g)</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="togglePendulumPause()" id="pendPauseBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors">
+                <i class="fa-solid fa-pause mr-1"></i> Tạm dừng
+              </button>
+              <button onclick="resetPendulumSim()" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition-colors">
+                <i class="fa-solid fa-rotate-left mr-1"></i> Đặt lại
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      setTimeout(initPendulumCanvas, 50);
+    }
+
+    function initPendulumCanvas() {
+      const canvas = document.getElementById('modalPendulumCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      pendulumSim.canvas = canvas;
+      pendulumSim.ctx = ctx;
+
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, rect.width * dpr);
+      canvas.height = Math.max(1, rect.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      pendulumSim.originX = rect.width / 2;
+      pendulumSim.originY = 50;
+
+      let dragging = false;
+
+      function onPointerDown(e) {
+        dragging = true;
+        pendulumSim.angularVelocity = 0;
+        updateAngleFromPointer(e);
+      }
+
+      function onPointerMove(e) {
+        if (!dragging) return;
+        updateAngleFromPointer(e);
+      }
+
+      function onPointerUp() {
+        dragging = false;
+      }
+
+      function updateAngleFromPointer(e) {
+        const r = canvas.getBoundingClientRect();
+        const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] && e.touches[0].clientX);
+        const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] && e.touches[0].clientY);
+        if (clientX === undefined || clientY === undefined) return;
+
+        const px = clientX - r.left;
+        const py = clientY - r.top;
+        const dx = px - pendulumSim.originX;
+        const dy = py - pendulumSim.originY;
+
+        if (dy > 10) {
+          pendulumSim.angle = Math.atan2(dx, dy);
+        }
+      }
+
+      canvas.addEventListener('mousedown', onPointerDown);
+      window.addEventListener('mousemove', onPointerMove);
+      window.addEventListener('mouseup', onPointerUp);
+
+      canvas.addEventListener('touchstart', onPointerDown, { passive: true });
+      window.addEventListener('touchmove', onPointerMove, { passive: true });
+      window.addEventListener('touchend', onPointerUp);
+
+      let lastT = performance.now();
+      function loop(t) {
+        const dt = Math.min((t - lastT) / 1000, 0.05);
+        lastT = t;
+
+        if (!dragging && !pendulumSim.isPaused && pendulumSim.length > 0) {
+          pendulumSim.angularAcceleration = (-pendulumSim.gravity / pendulumSim.length) * Math.sin(pendulumSim.angle) - (pendulumSim.damping * pendulumSim.angularVelocity);
+          pendulumSim.angularVelocity += pendulumSim.angularAcceleration * dt;
+          pendulumSim.angle += pendulumSim.angularVelocity * dt;
+        }
+
+        renderPendulum(canvas.getBoundingClientRect().width, canvas.getBoundingClientRect().height);
+        pendulumSim.animId = requestAnimationFrame(loop);
+      }
+
+      if (pendulumSim.animId) cancelAnimationFrame(pendulumSim.animId);
+      pendulumSim.animId = requestAnimationFrame(loop);
+    }
+
+    function renderPendulum(w, h) {
+      const ctx = pendulumSim.ctx;
+      if (!ctx) return;
+      ctx.clearRect(0, 0, w, h);
+
+      const ox = w / 2;
+      const oy = 40;
+      const pixelLen = pendulumSim.length * 110;
+      const bobX = ox + Math.sin(pendulumSim.angle) * pixelLen;
+      const bobY = oy + Math.cos(pendulumSim.angle) * pixelLen;
+
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(ox - 60, oy - 12, 120, 12);
+      ctx.beginPath();
+      ctx.arc(ox, oy, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1.5;
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(ox, oy + pixelLen + 30);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 2.5;
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(bobX, bobY);
+      ctx.stroke();
+
+      const bobRadius = 14 + Math.sqrt(pendulumSim.mass) * 8;
+      const grad = ctx.createRadialGradient(bobX - 4, bobY - 4, 3, bobX, bobY, bobRadius);
+      grad.addColorStop(0, '#fef08a');
+      grad.addColorStop(0.5, '#f59e0b');
+      grad.addColorStop(1, '#b45309');
+
+      ctx.beginPath();
+      ctx.arc(bobX, bobY, bobRadius, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.shadowColor = '#f59e0b';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      const v = pendulumSim.length * pendulumSim.angularVelocity;
+      const kinetic = 0.5 * pendulumSim.mass * v * v;
+      const height = pendulumSim.length * (1 - Math.cos(pendulumSim.angle));
+      const potential = pendulumSim.mass * pendulumSim.gravity * Math.max(0, height);
+      const total = kinetic + potential;
+
+      const elK = document.getElementById('pendKinetic');
+      const elP = document.getElementById('pendPotential');
+      const elT = document.getElementById('pendTotal');
+
+      if (elK) elK.textContent = `${kinetic.toFixed(2)} J`;
+      if (elP) elP.textContent = `${potential.toFixed(2)} J`;
+      if (elT) elT.textContent = `${total.toFixed(2)} J`;
+    }
+
+    function updatePendulumParams() {
+      const lenSlider = document.getElementById('pendLenSlider');
+      const massSlider = document.getElementById('pendMassSlider');
+      const gSelect = document.getElementById('pendGSelect');
+
+      if (lenSlider) {
+        pendulumSim.length = parseFloat(lenSlider.value);
+        const disp = document.getElementById('pendLenDisp');
+        if (disp) disp.textContent = `${pendulumSim.length.toFixed(2)} m`;
+      }
+
+      if (massSlider) {
+        pendulumSim.mass = parseFloat(massSlider.value);
+        const disp = document.getElementById('pendMassDisp');
+        if (disp) disp.textContent = `${pendulumSim.mass.toFixed(2)} kg`;
+      }
+
+      if (gSelect) {
+        pendulumSim.gravity = parseFloat(gSelect.value);
+        const disp = document.getElementById('pendGDisp');
+        if (disp) {
+          if (pendulumSim.gravity === 9.8) disp.textContent = 'Trái Đất (9.8 m/s²)';
+          else if (pendulumSim.gravity === 1.62) disp.textContent = 'Mặt Trăng (1.62 m/s²)';
+          else if (pendulumSim.gravity === 24.79) disp.textContent = 'Sao Mộc (24.8 m/s²)';
+          else disp.textContent = '0 m/s²';
+        }
+      }
+
+      const pDisp = document.getElementById('pendPeriodVal');
+      if (pDisp && pendulumSim.gravity > 0) {
+        const T = 2 * Math.PI * Math.sqrt(pendulumSim.length / pendulumSim.gravity);
+        pDisp.textContent = `T ≈ ${T.toFixed(2)} s`;
+      }
+    }
+
+    function togglePendulumPause() {
+      pendulumSim.isPaused = !pendulumSim.isPaused;
+      const btn = document.getElementById('pendPauseBtn');
+      if (btn) {
+        btn.innerHTML = pendulumSim.isPaused
+          ? '<i class="fa-solid fa-play mr-1"></i> Tiếp tục'
+          : '<i class="fa-solid fa-pause mr-1"></i> Tạm dừng';
+      }
+    }
+
+    function resetPendulumSim() {
+      pendulumSim.angle = Math.PI / 4;
+      pendulumSim.angularVelocity = 0;
+      pendulumSim.angularAcceleration = 0;
+      pendulumSim.isPaused = false;
+      const btn = document.getElementById('pendPauseBtn');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-pause mr-1"></i> Tạm dừng';
+      showToast('Đã đặt lại con lắc về góc 45 độ.');
+    }
+
+    // 4. MAIN APP, AUTHENTICATION, PARALLAX & I18N
+    let currentLang = 'vi';
+    let activeSubject = 'all';
+    let activeGrade = 'all';
+    let currentSearchTerm = '';
+    let currentOpenSimId = null;
+
+    const I18N = {
+      vi: {
+        'nav.tagline': 'Thí nghiệm Khoa học Ảo',
+        'nav.simulations': 'Mô phỏng',
+        'nav.subjects': 'Môn học',
+        'nav.liveDemo': 'Phòng thí nghiệm mẫu',
+        'nav.teachers': 'Tài nguyên GV',
+        'nav.about': 'Giới thiệu',
+        'auth.login': 'Đăng nhập',
+        'auth.register': 'Đăng ký',
+        'search.placeholder': 'Tìm thí nghiệm...',
+        'hero.badge': 'Chuẩn GDPT 2018 — Trực quan & Sáng tạo',
+        'hero.title1': 'Phòng thí nghiệm khoa học ảo tương tác',
+        'hero.title2': '— Học qua trải nghiệm trực quan',
+        'hero.desc': 'Kho mô phỏng miễn phí cho Vật lý, Hóa học, Sinh học, Vật lý địa cầu và Toán học dành cho phổ thông và giáo dục STEM.',
+        'hero.ctaExplore': 'Khám phá mô phỏng',
+        'hero.ctaTeacher': 'Dành cho giáo viên',
+        'hero.ctaTryNow': 'Thử thí nghiệm Ohm',
+        'stats.sims': 'Mô phỏng thí nghiệm',
+        'stats.users': 'Học sinh & GV sử dụng',
+        'stats.free': 'Miễn phí giáo dục',
+        'filter.subjectTitle': 'Môn học STEM',
+        'filter.all': 'Tất cả môn',
+        'filter.physics': 'Vật lý',
+        'filter.chemistry': 'Hóa học',
+        'filter.biology': 'Sinh học',
+        'filter.earth': 'Vật lý địa cầu',
+        'filter.math': 'Toán học',
+        'filter.gradeTitle': 'Cấp học:',
+        'grade.all': 'Tất cả cấp',
+        'grade.primary': 'Tiểu học (Lớp 1-5)',
+        'grade.middle': 'THCS (Lớp 6-9)',
+        'grade.high': 'THPT (Lớp 10-12)',
+        'grade.uni': 'Đại học',
+        'grid.sectionBadge': 'Kho học liệu số tương tác',
+        'grid.title': 'Thư Viện Thí Nghiệm Khoa Học',
+        'grid.subtitle': 'Chọn một thí nghiệm để bắt đầu khám phá, điều chỉnh các biến số và quan sát hiện tượng khoa học.',
+        'search.emptyTitle': 'Không tìm thấy mô phỏng phù hợp',
+        'search.emptyDesc': 'Vui lòng thử đổi từ khóa tìm kiếm hoặc bấm nút "Tất cả môn" và "Tất cả cấp học" để hiển thị danh sách đầy đủ.',
+        'search.reset': 'Khôi phục bộ lọc',
+        'about.title': 'Về Dự Án Thí Nghiệm Khoa Học STEMLab VN',
+        'about.desc': 'Lấy cảm hứng từ sáng kiến mô phỏng khoa học tương tác PhET (Đại học Colorado Boulder), STEMLab VN ra đời với sứ mệnh mang lại trải nghiệm giáo dục khoa học mở, trực quan, miễn phí và thuần Việt cho hàng triệu học sinh, giáo viên trên khắp mọi miền đất nước.',
+        'footer.subjects': 'Môn học',
+        'footer.resources': 'Tài nguyên STEM',
+        'footer.legal': 'Bản quyền & Pháp lý'
+      },
+      en: {
+        'nav.tagline': 'Virtual Science Lab',
+        'nav.simulations': 'Simulations',
+        'nav.subjects': 'Subjects',
+        'nav.liveDemo': 'Live Demo Lab',
+        'nav.teachers': 'Teacher Resources',
+        'nav.about': 'About Us',
+        'auth.login': 'Log In',
+        'auth.register': 'Sign Up',
+        'search.placeholder': 'Search simulations...',
+        'hero.badge': 'STEM Aligned — Intuitive & Engaging',
+        'hero.title1': 'Interactive Virtual Science Laboratory',
+        'hero.title2': '— Learning Through Discovery',
+        'hero.desc': 'Free interactive simulations for Physics, Chemistry, Biology, Earth Science, and Mathematics designed for K-12 and STEM education.',
+        'hero.ctaExplore': 'Explore Simulations',
+        'hero.ctaTeacher': 'For Teachers',
+        'hero.ctaTryNow': "Try Ohm's Lab",
+        'stats.sims': 'Active Simulations',
+        'stats.users': 'Teachers & Students',
+        'stats.free': 'Free & Open Source',
+        'filter.subjectTitle': 'STEM Disciplines',
+        'filter.all': 'All Subjects',
+        'filter.physics': 'Physics',
+        'filter.chemistry': 'Chemistry',
+        'filter.biology': 'Biology',
+        'filter.earth': 'Earth Science',
+        'filter.math': 'Mathematics',
+        'filter.gradeTitle': 'Grade Level:',
+        'grade.all': 'All Grades',
+        'grade.primary': 'Elementary (1-5)',
+        'grade.middle': 'Middle School (6-9)',
+        'grade.high': 'High School (10-12)',
+        'grade.uni': 'University / College',
+        'grid.sectionBadge': 'Digital Interactive Learning Suite',
+        'grid.title': 'Simulation Library',
+        'grid.subtitle': 'Select a simulation to explore variables, run trials, and witness scientific phenomena unfold.',
+        'search.emptyTitle': 'No matching simulations found',
+        'search.emptyDesc': 'Try adjusting your search query or reset the filters to browse the full catalog.',
+        'search.reset': 'Reset all filters',
+        'about.title': 'About STEMLab VN Platform',
+        'about.desc': 'Inspired by PhET Interactive Simulations (University of Colorado Boulder), STEMLab VN empowers Vietnamese STEM educators and learners with accessible, intuitive, and high-impact digital experiment environments.',
+        'footer.subjects': 'Disciplines',
+        'footer.resources': 'Teacher Resources',
+        'footer.legal': 'Copyright & Licensing'
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderSimulationCards();
+      setupFilterEventListeners();
+      setupSearchEventListeners();
+      setupMobileMenu();
+      setupFloatingIconsParallax();
+      restoreUserSession();
+      initOhmSimulation();
+      initHeroCanvas();
+    });
+
+    // Subtle mouse parallax on floating science icons
+    function setupFloatingIconsParallax() {
+      const hero = document.getElementById('heroSection');
+      const icons = document.querySelectorAll('#heroFloatingIcons .floating-science-icon');
+      if (!hero || !icons.length) return;
+
+      hero.addEventListener('mousemove', (e) => {
+        const rect = hero.getBoundingClientRect();
+        const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+        const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
+        icons.forEach((icon, idx) => {
+          const depth = ((idx % 4) + 1) * 4;
+          icon.style.marginLeft = `${(-nx * depth).toFixed(1)}px`;
+          icon.style.marginTop = `${(-ny * depth).toFixed(1)}px`;
+        });
+      });
+
+      hero.addEventListener('mouseleave', () => {
+        icons.forEach((icon) => {
+          icon.style.marginLeft = '0px';
+          icon.style.marginTop = '0px';
+        });
+      });
+    }
+
+    // AUTHENTICATION MODAL & SESSION LOGIC
+    function openAuthModal(mode = 'login') {
+      switchAuthTab(mode);
+      clearAuthFeedback();
+      const modal = document.getElementById('authModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById('authModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+      clearAuthFeedback();
+    }
+
+    function switchAuthTab(mode) {
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      const tabLogin = document.getElementById('tabLoginBtn');
+      const tabRegister = document.getElementById('tabRegisterBtn');
+      const titleEl = document.getElementById('authModalTitle');
+      const subtitleEl = document.getElementById('authModalSubtitle');
+
+      clearAuthFeedback();
+
+      if (mode === 'register') {
+        if (loginForm) loginForm.classList.add('hidden');
+        if (registerForm) registerForm.classList.remove('hidden');
+        if (tabRegister) tabRegister.className = 'py-2 rounded-xl text-xs font-extrabold transition-all bg-white text-brand-blue shadow-sm';
+        if (tabLogin) tabLogin.className = 'py-2 rounded-xl text-xs font-extrabold transition-all text-white/85 hover:text-white';
+        if (titleEl) titleEl.textContent = 'Đăng ký STEMLab VN';
+        if (subtitleEl) subtitleEl.textContent = 'Tạo tài khoản học sinh hoặc giáo viên hoàn toàn miễn phí';
+      } else {
+        if (registerForm) registerForm.classList.add('hidden');
+        if (loginForm) loginForm.classList.remove('hidden');
+        if (tabLogin) tabLogin.className = 'py-2 rounded-xl text-xs font-extrabold transition-all bg-white text-brand-blue shadow-sm';
+        if (tabRegister) tabRegister.className = 'py-2 rounded-xl text-xs font-extrabold transition-all text-white/85 hover:text-white';
+        if (titleEl) titleEl.textContent = 'Đăng nhập STEMLab VN';
+        if (subtitleEl) subtitleEl.textContent = 'Lưu kết quả thí nghiệm & phiếu học tập cá nhân';
+      }
+    }
+
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (!input || !icon) return;
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+      }
+    }
+
+    function showAuthFeedback(message, isError = true) {
+      const box = document.getElementById('authFeedbackBox');
+      if (!box) return;
+      box.textContent = message;
+      box.className = isError
+        ? 'mx-6 mt-4 p-3 rounded-xl text-xs font-semibold border bg-rose-50 text-rose-700 border-rose-200'
+        : 'mx-6 mt-4 p-3 rounded-xl text-xs font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200';
+      box.classList.remove('hidden');
+    }
+
+    function clearAuthFeedback() {
+      const box = document.getElementById('authFeedbackBox');
+      if (box) box.classList.add('hidden');
+    }
+
+    function fillDemoStudentAccount() {
+      const emailInput = document.getElementById('loginEmail');
+      const passInput = document.getElementById('loginPassword');
+      if (emailInput) emailInput.value = 'minhanh.stem@edu.vn';
+      if (passInput) passInput.value = 'stemlab2026';
+      showAuthFeedback('Đã điền tài khoản học sinh mẫu. Nhấn "Đăng nhập vào Phòng Lab" để tiếp tục.', false);
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const emailVal = (document.getElementById('loginEmail')?.value || '').trim();
+      const passVal = document.getElementById('loginPassword')?.value || '';
+
+      if (!emailVal || passVal.length < 4) {
+        showAuthFeedback('Vui lòng nhập đầy đủ thông tin đăng nhập hợp lệ.');
+        return;
+      }
+
+      const inferredName = emailVal.includes('@')
+        ? emailVal.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+        : emailVal;
+
+      setLoggedInUser({
+        name: inferredName || 'Thành viên STEM',
+        email: emailVal,
+        role: emailVal.toLowerCase().includes('gv') || emailVal.toLowerCase().includes('teacher') ? 'Giáo viên STEM' : 'Học sinh STEM'
+      });
+
+      closeAuthModal();
+      showToast(`Chào mừng trở lại, ${inferredName}!`);
+    }
+
+    function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const name = (document.getElementById('regFullName')?.value || '').trim();
+      const email = (document.getElementById('regEmail')?.value || '').trim();
+      const role = document.getElementById('regRole')?.value || 'Học sinh STEM';
+      const pass = document.getElementById('regPassword')?.value || '';
+      const confirmPass = document.getElementById('regConfirmPassword')?.value || '';
+      const agreed = document.getElementById('agreeTermsCheck')?.checked;
+
+      if (name.length < 2) {
+        showAuthFeedback('Vui lòng nhập họ và tên hợp lệ.');
+        return;
+      }
+      if (pass.length < 6) {
+        showAuthFeedback('Mật khẩu cần tối thiểu 6 ký tự.');
+        return;
+      }
+      if (pass !== confirmPass) {
+        showAuthFeedback('Mật khẩu nhập lại không khớp. Vui lòng kiểm tra lại.');
+        return;
+      }
+      if (!agreed) {
+        showAuthFeedback('Bạn cần đồng ý với điều khoản sử dụng để đăng ký.');
+        return;
+      }
+
+      setLoggedInUser({ name, email, role });
+      closeAuthModal();
+      showToast(`Đăng ký thành công! Xin chào ${name} (${role}).`);
+    }
+
+    function setLoggedInUser(user) {
+      try {
+        localStorage.setItem('stemlab_vn_user', JSON.stringify(user));
+      } catch (_e) {
+        // Storage fallback
+      }
+      renderAuthState(user);
+    }
+
+    function restoreUserSession() {
+      try {
+        const raw = localStorage.getItem('stemlab_vn_user');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.name) {
+            renderAuthState(parsed);
+            return;
+          }
+        }
+      } catch (_e) {
+        // Ignore storage error
+      }
+      renderAuthState(null);
+    }
+
+    function logoutUser() {
+      try {
+        localStorage.removeItem('stemlab_vn_user');
+      } catch (_e) {
+        // Ignore
+      }
+      renderAuthState(null);
+      showToast('Đã đăng xuất khỏi tài khoản STEMLab VN.');
+    }
+
+    function renderAuthState(user) {
+      const guestDesktop = document.getElementById('authGuestControls');
+      const userDesktop = document.getElementById('authUserBadge');
+      const guestMobile = document.getElementById('mobileAuthGuest');
+      const userMobile = document.getElementById('mobileAuthUser');
+
+      if (user) {
+        if (guestDesktop) {
+          guestDesktop.classList.remove('sm:flex');
+          guestDesktop.classList.add('hidden');
+        }
+        if (userDesktop) {
+          userDesktop.classList.remove('hidden');
+          userDesktop.classList.add('flex');
+        }
+        if (guestMobile) guestMobile.classList.add('hidden');
+        if (userMobile) {
+          userMobile.classList.remove('hidden');
+          userMobile.classList.add('flex');
+        }
+
+        const words = user.name.trim().split(/\s+/);
+        const initials = words.length >= 2
+          ? (words[0][0] + words[words.length - 1][0]).toUpperCase()
+          : user.name.slice(0, 2).toUpperCase();
+
+        const initialsEl = document.getElementById('userAvatarInitials');
+        const nameEl = document.getElementById('userDisplayName');
+        const roleEl = document.getElementById('userDisplayRole');
+        const mNameEl = document.getElementById('mobileUserName');
+        const mRoleEl = document.getElementById('mobileUserRole');
+
+        if (initialsEl) initialsEl.textContent = initials || 'SV';
+        if (nameEl) nameEl.textContent = user.name;
+        if (roleEl) roleEl.textContent = user.role;
+        if (mNameEl) mNameEl.textContent = user.name;
+        if (mRoleEl) mRoleEl.textContent = user.role;
+      } else {
+        if (guestDesktop) {
+          guestDesktop.classList.remove('hidden');
+          guestDesktop.classList.add('sm:flex');
+        }
+        if (userDesktop) {
+          userDesktop.classList.add('hidden');
+          userDesktop.classList.remove('flex');
+        }
+        if (guestMobile) guestMobile.classList.remove('hidden');
+        if (userMobile) {
+          userMobile.classList.add('hidden');
+          userMobile.classList.remove('flex');
+        }
+      }
+    }
+
+    // LANGUAGE & FILTERS
+    function toggleLanguage() {
+      currentLang = currentLang === 'vi' ? 'en' : 'vi';
+      const flag = document.getElementById('langFlag');
+      const text = document.getElementById('langText');
+      if (flag) flag.textContent = currentLang === 'vi' ? '🇻🇳' : '🇬🇧';
+      if (text) text.textContent = currentLang === 'vi' ? 'VI' : 'EN';
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (I18N[currentLang][key]) el.textContent = I18N[currentLang][key];
+      });
+
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (I18N[currentLang][key]) el.setAttribute('placeholder', I18N[currentLang][key]);
+      });
+
+      renderSimulationCards();
+      showToast(currentLang === 'vi' ? 'Đã chuyển sang Tiếng Việt' : 'Switched to English');
+    }
+
+    function setupFilterEventListeners() {
+      const subjectBtns = document.querySelectorAll('.filter-subject-btn');
+      subjectBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          subjectBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeSubject = btn.getAttribute('data-subject');
+          renderSimulationCards();
+        });
+      });
+
+      const gradeBtns = document.querySelectorAll('.filter-grade-btn');
+      gradeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          gradeBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeGrade = btn.getAttribute('data-grade');
+          renderSimulationCards();
+        });
+      });
+    }
+
+    function filterBySubject(subj) {
+      const btn = document.querySelector(`.filter-subject-btn[data-subject="${subj}"]`);
+      if (btn) btn.click();
+    }
+
+    function setupSearchEventListeners() {
+      const globalInput = document.getElementById('globalSearchInput');
+      const mobileInput = document.getElementById('mobileSearchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
+
+      function handleSearch(val) {
+        currentSearchTerm = val.trim().toLowerCase();
+        if (clearBtn) {
+          if (currentSearchTerm.length > 0) clearBtn.classList.remove('hidden');
+          else clearBtn.classList.add('hidden');
+        }
+        renderSimulationCards();
+      }
+
+      if (globalInput) globalInput.addEventListener('input', (e) => handleSearch(e.target.value));
+      if (mobileInput) mobileInput.addEventListener('input', (e) => handleSearch(e.target.value));
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          if (globalInput) globalInput.value = '';
+          if (mobileInput) mobileInput.value = '';
+          handleSearch('');
+          if (globalInput) globalInput.focus();
+        });
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== globalInput && document.activeElement !== mobileInput) {
+          e.preventDefault();
+          if (globalInput) {
+            globalInput.focus();
+            globalInput.select();
+          }
+        }
+      });
+    }
+
+    function resetAllFilters() {
+      activeSubject = 'all';
+      activeGrade = 'all';
+      currentSearchTerm = '';
+
+      const gIn = document.getElementById('globalSearchInput');
+      const mIn = document.getElementById('mobileSearchInput');
+      if (gIn) gIn.value = '';
+      if (mIn) mIn.value = '';
+
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) clearBtn.classList.add('hidden');
+
+      document.querySelectorAll('.filter-subject-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-subject') === 'all');
+      });
+
+      document.querySelectorAll('.filter-grade-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-grade') === 'all');
+      });
+
+      renderSimulationCards();
+      showToast(currentLang === 'vi' ? 'Đã khôi phục bộ lọc' : 'Filters reset');
+    }
+
+    function renderSimulationCards() {
+      const grid = document.getElementById('simulationGrid');
+      const emptyAlert = document.getElementById('noResultsAlert');
+      const countBadge = document.getElementById('currentCount');
+      if (!grid) return;
+
+      const filtered = SIMULATIONS_DATA.filter(item => {
+        const matchSubject = activeSubject === 'all' || item.subject === activeSubject;
+
+        let matchGrade = true;
+        if (activeGrade !== 'all') {
+          if (activeGrade === 'primary') matchGrade = item.grade === 'primary';
+          else if (activeGrade === 'middle') matchGrade = item.grade === 'middle';
+          else if (activeGrade === 'high') matchGrade = item.grade === 'high' || item.grade === 'middle';
+          else if (activeGrade === 'uni') matchGrade = item.grade === 'high' || item.grade === 'uni';
+        }
+
+        let matchSearch = true;
+        if (currentSearchTerm) {
+          const title = (currentLang === 'vi' ? item.title_vi : item.title_en).toLowerCase();
+          const desc = (currentLang === 'vi' ? item.desc_vi : item.desc_en).toLowerCase();
+          const subj = (currentLang === 'vi' ? item.subject_vi : item.subject_en).toLowerCase();
+          matchSearch = title.includes(currentSearchTerm) || desc.includes(currentSearchTerm) || subj.includes(currentSearchTerm);
+        }
+
+        return matchSubject && matchGrade && matchSearch;
+      });
+
+      if (countBadge) countBadge.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        if (emptyAlert) emptyAlert.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyAlert) emptyAlert.classList.add('hidden');
+
+      const runLabel = currentLang === 'vi' ? 'Chạy mô phỏng' : 'Run Simulation';
+
+      grid.innerHTML = filtered.map(item => {
+        const title = currentLang === 'vi' ? item.title_vi : item.title_en;
+        const desc = currentLang === 'vi' ? item.desc_vi : item.desc_en;
+        const subject = currentLang === 'vi' ? item.subject_vi : item.subject_en;
+        const grade = currentLang === 'vi' ? item.grade_label_vi : item.grade_label_en;
+
+        let subjectBadgeStyle = 'bg-blue-100 text-blue-800 border-blue-200';
+        if (item.subject === 'chemistry') subjectBadgeStyle = 'bg-teal-100 text-teal-800 border-teal-200';
+        else if (item.subject === 'biology') subjectBadgeStyle = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        else if (item.subject === 'earth') subjectBadgeStyle = 'bg-amber-100 text-amber-800 border-amber-200';
+        else if (item.subject === 'math') subjectBadgeStyle = 'bg-purple-100 text-purple-800 border-purple-200';
+
+        return `
+          <div class="sim-card bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm hover:shadow-card-hover flex flex-col justify-between group transition-all duration-300">
+            <div class="relative w-full h-48 bg-slate-900 overflow-hidden cursor-pointer" onclick="handleCardClick('${item.id}')">
+              ${item.svgVisual}
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+
+              <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900/30 backdrop-blur-[2px]">
+                <span class="w-14 h-14 rounded-2xl bg-brand-blue text-white flex items-center justify-center text-xl shadow-xl transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                  <i class="fa-solid fa-play ml-1"></i>
+                </span>
+              </div>
+
+              <div class="absolute top-3 right-3">
+                <span class="px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold border border-slate-700 shadow-sm flex items-center gap-1.5">
+                  <i class="fa-solid fa-graduation-cap text-amber-400 text-xs"></i>
+                  ${grade}
+                </span>
+              </div>
+
+              ${item.hasLiveDemo ? `
+                <div class="absolute top-3 left-3">
+                  <span class="px-2.5 py-1 rounded-full bg-emerald-500/90 text-white text-[11px] font-bold shadow-sm flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                    Interactive Lab
+                  </span>
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-2.5">
+                  <span class="px-2.5 py-1 rounded-lg text-xs font-bold border ${subjectBadgeStyle} flex items-center gap-1.5">
+                    <i class="${item.subjectIcon}"></i>
+                    ${subject}
+                  </span>
+                  <div class="flex items-center gap-1 text-xs text-slate-500 font-semibold">
+                    <i class="fa-solid fa-star text-amber-400"></i>
+                    <span class="text-slate-800 font-bold">${item.rating}</span>
+                    <span>(${item.reviews})</span>
+                  </div>
+                </div>
+
+                <h3 class="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-brand-blue transition-colors line-clamp-1 mb-1.5">
+                  ${title}
+                </h3>
+
+                <p class="text-xs sm:text-sm text-slate-600 line-clamp-2 leading-relaxed font-normal">
+                  ${desc}
+                </p>
+              </div>
+
+              <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+                <button
+                  onclick="handleCardClick('${item.id}')"
+                  class="flex-1 py-2.5 px-4 rounded-xl bg-brand-blue hover:bg-brand-blueHover text-white text-xs font-bold transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 group-hover:shadow-lg"
+                >
+                  <i class="fa-solid fa-play text-[10px]"></i>
+                  <span>${runLabel}</span>
+                </button>
+
+                <button
+                  onclick="copyEmbedCode('${item.id}')"
+                  title="Nhúng thí nghiệm vào LMS"
+                  class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+                >
+                  <i class="fa-solid fa-code text-xs"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleCardClick(simId) {
+      if (simId === 'ohm-law') {
+        const demoSection = document.getElementById('interactive-demo');
+        if (demoSection) {
+          demoSection.scrollIntoView({ behavior: 'smooth' });
+          showToast(currentLang === 'vi' ? 'Đã mở phòng thí nghiệm Định luật Ohm' : "Ohm's Law Lab opened");
+        }
+      } else if (simId === 'pendulum-energy') {
+        openSimModal(simId);
+        openPendulumSimModal();
+      } else {
+        openSimModal(simId);
+      }
+    }
+
+    function openSimModal(simId) {
+      const item = SIMULATIONS_DATA.find(s => s.id === simId);
+      if (!item) return;
+
+      currentOpenSimId = simId;
+      const modal = document.getElementById('simModal');
+      const titleEl = document.getElementById('modalSimTitle');
+      const subjEl = document.getElementById('modalSimSubject');
+      const gradeEl = document.getElementById('modalSimGrade');
+      const container = document.getElementById('modalSimContainer');
+
+      if (titleEl) titleEl.textContent = currentLang === 'vi' ? item.title_vi : item.title_en;
+      if (subjEl) subjEl.textContent = currentLang === 'vi' ? item.subject_vi : item.subject_en;
+      if (gradeEl) gradeEl.textContent = currentLang === 'vi' ? item.grade_label_vi : item.grade_label_en;
+
+      if (simId !== 'pendulum-energy') {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm max-w-3xl mx-auto space-y-6">
+            <div class="w-full h-64 rounded-2xl overflow-hidden shadow-inner border border-slate-200 bg-slate-900">
+              ${item.svgVisual}
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-brand-blue">
+                  ${currentLang === 'vi' ? item.subject_vi : item.subject_en}
+                </span>
+                <span class="text-xs text-slate-500 font-semibold">• Đánh giá ${item.rating}/5.0 (${item.reviews} lượt học)</span>
+              </div>
+
+              <h3 class="text-2xl font-black text-slate-900">
+                ${currentLang === 'vi' ? item.title_vi : item.title_en}
+              </h3>
+
+              <p class="text-sm text-slate-600 leading-relaxed">
+                ${currentLang === 'vi' ? item.desc_vi : item.desc_en}
+              </p>
+
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500">Mục tiêu học tập STEM:</h4>
+                <ul class="text-xs text-slate-700 space-y-1.5 list-disc list-inside">
+                  <li>Xác định các đại lượng vật lý/hóa học độc lập và phụ thuộc.</li>
+                  <li>Kiểm chứng quy luật thực nghiệm bằng số liệu đo lường khách quan.</li>
+                  <li>Phát triển kỹ năng suy luận nguyên nhân - kết quả và phân tích đồ thị.</li>
+                </ul>
+              </div>
+
+              <div class="flex flex-wrap gap-3 pt-2">
+                <button onclick="downloadWorksheet('${item.id}')" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs transition-colors flex items-center gap-2">
+                  <i class="fa-solid fa-file-pdf"></i>
+                  <span>Tải phiếu học tập</span>
+                </button>
+                <button onclick="openTeacherModal()" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-colors flex items-center gap-2">
+                  <i class="fa-solid fa-chalkboard-user"></i>
+                  <span>Xem giáo án gợi ý 5E</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeSimModal() {
+      const modal = document.getElementById('simModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+      if (pendulumSim.animId) {
+        cancelAnimationFrame(pendulumSim.animId);
+      }
+    }
+
+    function toggleModalFullscreen() {
+      const modal = document.getElementById('simModal');
+      if (!modal) return;
+      if (!document.fullscreenElement) {
+        modal.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function openTeacherModal() {
+      const modal = document.getElementById('teacherModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeTeacherModal() {
+      const modal = document.getElementById('teacherModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    function downloadWorksheet(type) {
+      showToast(currentLang === 'vi'
+        ? `Đang tạo phiếu học tập [${type.toUpperCase()}] chuẩn STEM...`
+        : `Generating Worksheet for [${type.toUpperCase()}]...`);
+
+      setTimeout(() => {
+        const content = `PHIẾU HỌC TẬP KHÁM PHÁ KHOA HỌC STEM (STEMLab VN)\nBài thí nghiệm: ${type.toUpperCase()}\nCâu 1: Dự đoán hiện tượng khi thay đổi biến số.\nCâu 2: Ghi nhận số liệu thực nghiệm và rút ra kết luận.\n`;
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Phieu-Hoc-Tap-${type}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Tải phiếu học tập thành công!');
+      }, 450);
+    }
+
+    function copyTextFallback(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+      } catch (_e) {
+        // Ignore
+      }
+      document.body.removeChild(ta);
+    }
+
+    function copyEmbedCode(simId) {
+      const code = `<iframe src="https://stemlab.edu.vn/embed/${simId}" width="800" height="500" frameborder="0" allowfullscreen></iframe>`;
+      copyTextFallback(code);
+      showToast('Đã sao chép mã nhúng Iframe.');
+    }
+
+    function copyEmbedCodeCurrentSim() {
+      copyEmbedCode(currentOpenSimId || 'ohm-law');
+    }
+
+    function copyCode(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        copyTextFallback(el.innerText || el.textContent || '');
+        showToast('Đã sao chép mã nhúng!');
+      }
+    }
+
+    let toastTimer = null;
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const msg = document.getElementById('toastMessage');
+      if (!toast || !msg) return;
+
+      msg.textContent = message;
+      toast.classList.remove('hidden');
+      toast.classList.remove('translate-y-4');
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-4');
+        setTimeout(() => toast.classList.add('hidden'), 200);
+      }, 3200);
+    }
+
+    function setupMobileMenu() {
+      const btn = document.getElementById('mobileMenuBtn');
+      const menu = document.getElementById('mobileMenu');
+      if (btn && menu) {
+        btn.addEventListener('click', () => {
+          menu.classList.toggle('hidden');
+        });
+      }
+    }
+
+    function openContactModal() {
+      showToast('Cảm ơn bạn! Ban biên tập STEMLab VN sẽ liên hệ qua email giáo dục.');
+    }
+
+    function openEmbedGuide() {
+      openTeacherModal();
+    }
+  </script>
+</body>
+</html>

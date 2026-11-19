@@ -1,0 +1,208 @@
+/* styles.css - Custom styling & floating science effects for STEMLab VN */
+
+@layer utilities {
+  @keyframes spinSlow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spinSlow 16s linear infinite;
+  }
+}
+
+/* Hiệu ứng icon khoa học nổi & trôi nhẹ */
+@keyframes floatScience {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translateY(-14px) rotate(5deg) scale(1.04);
+  }
+  66% {
+    transform: translateY(8px) rotate(-4deg) scale(0.98);
+  }
+}
+
+@keyframes orbitPulse {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    box-shadow: 0 8px 20px -4px rgba(29, 78, 216, 0.15);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.08);
+    box-shadow: 0 14px 26px -4px rgba(13, 148, 136, 0.25);
+  }
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.floating-icon {
+  position: absolute;
+  animation: floatScience 7.5s ease-in-out infinite;
+  transition: transform 0.2s ease-out;
+  will-change: transform;
+}
+
+.icon-chip {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  border-width: 1px;
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px -8px rgba(15, 23, 42, 0.12);
+}
+
+.hero-orbit-badge {
+  position: absolute;
+  z-index: 15;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e2e8f0;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  animation: orbitPulse 5s ease-in-out infinite;
+}
+
+.animate-modal-pop {
+  animation: modalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Custom Range Sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.18);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+}
+
+#voltageSlider::-webkit-slider-thumb {
+  background: #1D4ED8;
+  border: 2px solid #ffffff;
+}
+
+#resistanceSlider::-webkit-slider-thumb {
+  background: #e11d48;
+  border: 2px solid #ffffff;
+}
+
+/* Filter Subject & Grade Buttons Active State */
+.filter-subject-btn {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.filter-subject-btn:hover {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.filter-subject-btn.active {
+  background-color: #1D4ED8;
+  color: #ffffff;
+  border-color: #1D4ED8;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+}
+
+.filter-subject-btn.active i {
+  color: #ffffff !important;
+}
+
+.filter-grade-btn {
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.filter-grade-btn:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.filter-grade-btn.active {
+  background-color: #0D9488;
+  color: #ffffff;
+  border-color: #0D9488;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+}
+
+/* Card hover zoom & subtle border glow */
+.sim-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sim-card:hover {
+  transform: translateY(-6px);
+}
+
+/* Lightbulb Glow Animation */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.bulb-glow {
+  animation: pulseGlow 2s infinite ease-in-out;
+}
